@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallba
 import net.minecraft.text.Text;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONStyle;
+import net.spit365.clienttweaks.ClientTweaks;
 
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
@@ -15,7 +16,7 @@ public class ClientCommands {
 
      public static void init(){
           ClientCommandRegistrationCallback.EVENT.register((dispatcher, commandRegistryAccess) -> dispatcher
-                  .register(literal("config")
+                  .register(literal(ClientTweaks.MOD_ID)
                           .then(literal("add")
                                   .then(argument("category", StringArgumentType.word())
                                           .then(argument("target", StringArgumentType.word())

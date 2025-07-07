@@ -13,10 +13,10 @@ public class Range extends SkillIssue{
      @Override public KeyBinding key() {return RANGE_KEY;}
      @Override public void register() {
           RANGE_KEY = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                  "key.lulasmod.toggle_range",
+                  "key.client-tweaks.toggle_range",
                   InputUtil.Type.KEYSYM,
                   GLFW.GLFW_KEY_APOSTROPHE,
-                  "key.categories.lulasmod"
+                  "key.categories.client-tweaks"
           ));
      }
      @Override

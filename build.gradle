@@ -16,7 +16,7 @@ loom {
 	splitEnvironmentSourceSets()
 
 	mods {
-		"lulasmod" {
+		"client-tweaks" {
 			sourceSet sourceSets.main
 			sourceSet sourceSets.client
 		}

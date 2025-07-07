@@ -14,10 +14,10 @@ public class Teleport extends SkillIssue{
      @Override public KeyBinding key() {return TELEPORT_KEY;}
      @Override public void register() {
           TELEPORT_KEY = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                  "key.lulasmod.teleport",
+                  "key.client-tweaks.teleport",
                   InputUtil.Type.KEYSYM,
                   GLFW.GLFW_KEY_GRAVE_ACCENT,
-                  "key.categories.lulasmod"
+                  "key.categories.client-tweaks"
           ));
      }
 

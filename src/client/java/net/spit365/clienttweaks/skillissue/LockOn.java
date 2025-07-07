@@ -17,10 +17,10 @@ public class LockOn extends SkillIssue{
      @Override public KeyBinding key() {return LOCK_ON_KEY;}
      @Override public void register() {
           LOCK_ON_KEY = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                  "key.lulasmod.toggle_lock_on",
+                  "key.client-tweaks.toggle_lock_on",
                   InputUtil.Type.KEYSYM,
                   GLFW.GLFW_KEY_Q,
-                  "key.categories.lulasmod"
+                  "key.categories.client-tweaks"
           ));
      }
 
