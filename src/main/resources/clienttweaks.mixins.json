@@ -1,9 +1,8 @@
 {
 	"required": true,
-	"package": "net.spit365.lulasmod.mixin",
+	"package": "net.spit365.clienttweaks.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
-		"ExampleMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

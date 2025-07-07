@@ -1,4 +1,4 @@
-package net.spit365.lulasmod.mixin.client;
+package net.spit365.clienttweaks.mixin.client;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -8,8 +8,9 @@ import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
-import net.spit365.lulasmod.entity.renderer.SporeFeatureRenderer;
-import net.spit365.lulasmod.entity.renderer.TailFeatureRenderer;
+import net.spit365.clienttweaks.entity.renderer.EarsFeatureRenderer;
+import net.spit365.clienttweaks.entity.renderer.SporeFeatureRenderer;
+import net.spit365.clienttweaks.entity.renderer.TailFeatureRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -24,5 +25,6 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
      public void init(EntityRendererFactory.Context ctx, boolean slim, CallbackInfo ci) {
           addFeature(new TailFeatureRenderer(this));
           addFeature(new SporeFeatureRenderer(this));
+          addFeature(new EarsFeatureRenderer(this));
      }
 }

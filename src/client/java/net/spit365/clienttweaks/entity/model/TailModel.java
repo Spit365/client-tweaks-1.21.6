@@ -1,15 +1,15 @@
-package net.spit365.lulasmod.entity.model;
+package net.spit365.clienttweaks.entity.model;
 
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.state.EntityRenderState;
 import net.minecraft.util.Identifier;
-import net.spit365.lulasmod.Lulasmod;
+import net.spit365.clienttweaks.ClientTweaks;
 
 public class TailModel<T extends EntityRenderState> extends EntityModel<T> {
 	public TailModel(ModelPart root) {super(root);}
 
-	public static final Identifier TEXTURE = Identifier.of(Lulasmod.MOD_ID, "textures/entity/tail_feature.png");
+	public static final Identifier TEXTURE = Identifier.of(ClientTweaks.MOD_ID, "textures/entity/tail_feature.png");
 
      public static TexturedModelData getTexturedModelData() {
 		ModelData modelData = new ModelData();

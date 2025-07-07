@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "net.spit365.clienttweaks.mixin.client",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "PlayerEntityMixin",
+    "PlayerEntityRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+	}
+}
