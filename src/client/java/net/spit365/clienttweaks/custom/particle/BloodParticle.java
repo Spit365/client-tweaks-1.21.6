@@ -20,11 +20,10 @@ public class BloodParticle extends SpriteBillboardParticle {
      protected BloodParticle(ClientWorld world, double x, double y, double z, SpriteProvider spriteProvider) {
           super(world, x, y, z, 0, 0, 0);
           this.setSprite(spriteProvider.getSprite(world.random));
-          this.velocityMultiplier = world.random.nextFloat() * 3f;
-          this.gravityStrength = 10.0F;
-          this.maxAge = 200;
-               //36000;
-          this.scale = 1.2F;
+          this.velocityMultiplier = Math.min(world.random.nextFloat() * bloodParticles.size() / 2, 2) + 2f;
+          this.gravityStrength = 10f;
+          this.maxAge = 36000;
+          this.scale = 1f;
           bloodParticles.add(this);
      }
 
@@ -37,7 +36,10 @@ public class BloodParticle extends SpriteBillboardParticle {
      public void tick() {
           super.tick();
           if (!this.isAlive()) bloodParticles.remove(this);
+          this.setPos(roundPixels(this.x), roundPixels(this.y), roundPixels(this.z));
      }
+
+     private double roundPixels(double i) {return ((int) (i * 16)) / 16d;}
 
      @Override
      public void render(VertexConsumer vertexConsumer, Camera camera, float tickProgress) {
@@ -76,5 +78,8 @@ public class BloodParticle extends SpriteBillboardParticle {
           public BloodParticle createParticle(SimpleParticleType type, ClientWorld world, double x, double y, double z, double dx, double dy, double dz) {
                return new BloodParticle(world, x, y, z, spriteProvider);
           }
+     }
+     public static boolean isTouchingBlood(Vec3d pos){
+          return bloodParticles.stream().anyMatch(bloodParticle -> pos.squaredDistanceTo(bloodParticle.x, bloodParticle.y, bloodParticle.z) < 0.25);
      }
 }

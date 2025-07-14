@@ -8,6 +8,7 @@ import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
+import net.spit365.clienttweaks.custom.entity.renderer.BloodFeatureRenderer;
 import net.spit365.clienttweaks.custom.entity.renderer.EarsFeatureRenderer;
 import net.spit365.clienttweaks.custom.entity.renderer.SporeFeatureRenderer;
 import net.spit365.clienttweaks.custom.entity.renderer.TailFeatureRenderer;
@@ -26,5 +27,6 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
           addFeature(new TailFeatureRenderer(this));
           addFeature(new SporeFeatureRenderer(this));
           addFeature(new EarsFeatureRenderer(this));
+          addFeature(new BloodFeatureRenderer(this));
      }
 }

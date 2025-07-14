@@ -17,7 +17,7 @@ public class ClientPlayNetworkHandlerMixin {
 
      @Inject(method = "onDeathMessage", at = @At("TAIL"))
      public void onDeathMessage(DeathMessageS2CPacket packet, CallbackInfo ci){
-          if (world != null && world.getEntityById(packet.playerId()) instanceof PlayerEntity player) for (int i = 0; i < world.random.nextInt(3) + 3 ; i++)
+          if (world != null && world.getEntityById(packet.playerId()) instanceof PlayerEntity player) for (int i = 0; i < world.random.nextInt(4) + 6 ; i++)
 			world.addParticleClient(ModParticles.BLOOD, player.getX(), player.getY() +1, player.getZ(), 1, 0, 1);
      }
 }
