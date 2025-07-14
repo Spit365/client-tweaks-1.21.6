@@ -15,7 +15,7 @@ import net.minecraft.util.math.Vec3d;
 import java.util.LinkedList;
 
 public class BloodParticle extends SpriteBillboardParticle {
-     private static LinkedList<BloodParticle> bloodParticles = new LinkedList<>();
+     private static final LinkedList<BloodParticle> bloodParticles = new LinkedList<>();
 
      protected BloodParticle(ClientWorld world, double x, double y, double z, SpriteProvider spriteProvider) {
           super(world, x, y, z, 0, 0, 0);

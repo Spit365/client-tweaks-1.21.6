@@ -9,9 +9,8 @@ import java.io.*;
 import java.util.Objects;
 
 public class ConfigManager {
-     public static String path = "config/tailed.json";
+     public static final String path = "config/tailed.json";
 
-     @SuppressWarnings("unchecked")
      public interface DefaultedJsonReader {
           default Integer intOption(JSONObject options, String value){
                try {

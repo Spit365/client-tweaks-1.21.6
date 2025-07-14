@@ -12,19 +12,19 @@ import java.util.*;
 public class SkillIssue {
      public static int targetIndex = 0;
 
-     public static KeyBinding NEXT_TARGET_KEY = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+     public static final KeyBinding NEXT_TARGET_KEY = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                   "key.client-tweaks.next_target",
                   InputUtil.Type.KEYSYM,
                   GLFW.GLFW_KEY_RIGHT,
                   "key.categories.client-tweaks"
      ));
-     public static KeyBinding PREVIOUS_TARGET_KEY = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+     public static final KeyBinding PREVIOUS_TARGET_KEY = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                   "key.client-tweaks.previous_target",
                   InputUtil.Type.KEYSYM,
                   GLFW.GLFW_KEY_LEFT,
                   "key.categories.client-tweaks"
      ));
-     public static KeyBinding RESET_TARGET_KEY = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+     public static final KeyBinding RESET_TARGET_KEY = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                   "key.client-tweaks.reset_target",
                   InputUtil.Type.KEYSYM,
                   GLFW.GLFW_KEY_DOWN,
@@ -50,10 +50,10 @@ public class SkillIssue {
           public boolean activated;
      }
 
-     public static LockOn lockOn = new LockOn();
-     public static Teleport teleport = new Teleport();
-     public static Range range = new Range();
-     public static Glowing glowing = new Glowing();
+     static {new Teleport();}
+     public static final LockOn lockOn = new LockOn();
+     public static final Range range = new Range();
+     public static final Glowing glowing = new Glowing();
 
      public static void keybindLogic(MinecraftClient client){
           Normal.normals.forEach(normal -> {if (normal.key().wasPressed()) normal.onKeyPressed(client);});
