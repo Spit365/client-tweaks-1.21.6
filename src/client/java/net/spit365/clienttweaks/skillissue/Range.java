@@ -4,23 +4,17 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
-public class Range extends SkillIssue{
-     public boolean isRange = false;
+public class Range extends SkillIssue.Toggleable{
+     public Range() {super(false);}
 
-     private static KeyBinding RANGE_KEY;
      @Override public KeyBinding key() {return RANGE_KEY;}
-     @Override public void register() {
-          RANGE_KEY = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                  "key.client-tweaks.toggle_range",
-                  InputUtil.Type.KEYSYM,
-                  GLFW.GLFW_KEY_APOSTROPHE,
-                  "key.categories.client-tweaks"
-          ));
-     }
-     @Override
-     public void onKeyPressed(MinecraftClient client) {
-          isRange = !isRange;
-     }
+     private static final KeyBinding RANGE_KEY = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+             "key.client-tweaks.toggle_range",
+             InputUtil.Type.KEYSYM,
+             GLFW.GLFW_KEY_APOSTROPHE,
+             "key.categories.client-tweaks"
+     ));
 }

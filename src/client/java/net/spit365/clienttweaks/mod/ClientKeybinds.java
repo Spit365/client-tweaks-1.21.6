@@ -7,9 +7,10 @@ public class ClientKeybinds {
 
      public static void init(){
           ClientTickEvents.END_CLIENT_TICK.register(minecraftClient -> {
-               if (SkillIssue.lockOn.key().wasPressed()) SkillIssue.lockOn.onKeyPressed(minecraftClient);
-               if (SkillIssue.teleport.key().wasPressed()) SkillIssue.teleport.onKeyPressed(minecraftClient);
-               if (SkillIssue.range.key().wasPressed()) SkillIssue.range.onKeyPressed(minecraftClient);
+               SkillIssue.keybindLogic(minecraftClient);
+               if (SkillIssue.NEXT_TARGET_KEY.wasPressed()) SkillIssue.targetIndex++;
+               if (SkillIssue.PREVIOUS_TARGET_KEY.wasPressed()) SkillIssue.targetIndex--;
+               if (SkillIssue.RESET_TARGET_KEY.wasPressed()) SkillIssue.targetIndex = 0;
           });
      }
 }

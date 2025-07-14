@@ -7,19 +7,17 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
+import net.spit365.clienttweaks.mod.ClientMethods;
 import org.lwjgl.glfw.GLFW;
 
-public class Teleport extends SkillIssue{
-     private static KeyBinding TELEPORT_KEY;
+public class Teleport extends SkillIssue.Normal{
      @Override public KeyBinding key() {return TELEPORT_KEY;}
-     @Override public void register() {
-          TELEPORT_KEY = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                  "key.client-tweaks.teleport",
-                  InputUtil.Type.KEYSYM,
-                  GLFW.GLFW_KEY_GRAVE_ACCENT,
-                  "key.categories.client-tweaks"
-          ));
-     }
+     private static final KeyBinding TELEPORT_KEY = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+             "key.client-tweaks.teleport",
+             InputUtil.Type.KEYSYM,
+             GLFW.GLFW_KEY_UNKNOWN,
+             "key.categories.client-tweaks"
+     ));
 
      @Override
      public void onKeyPressed(MinecraftClient client) {
@@ -27,7 +25,7 @@ public class Teleport extends SkillIssue{
           ClientWorld world = client.world;
 
           if (player != null && world != null) {
-               LivingEntity target = selectNearestEntity(player.getEyePos(), world, player);
+               LivingEntity target = ClientMethods.selectNearestEntity(player.getEyePos(), world, player);
                if (target != null) player.setPosition(target.getPos().subtract(target.getRotationVec(1).normalize().multiply(1, 0, 1)));
           }
      }

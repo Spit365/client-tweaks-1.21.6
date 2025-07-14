@@ -11,20 +11,8 @@ import java.util.Objects;
 public class ConfigManager {
      public static String path = "config/tailed.json";
 
+     @SuppressWarnings("unchecked")
      public interface DefaultedJsonReader {
-          default <T> T option(JSONObject options, String value, Class<T> returnType){
-               try {
-                    return returnType.cast(Objects.requireNonNull(options.get(value)));
-               }
-               catch (Exception e1) {
-                    try {
-                         return returnType.cast(defaults(value));}
-                    catch (Exception e2) {
-                         ClientTweaks.LOGGER.error("Your defaults are used with the wrong type");
-                              return (T) new Object();
-                    }
-               }
-          }
           default Integer intOption(JSONObject options, String value){
                try {
                     return Integer.parseInt(Objects.requireNonNull(options.get(value).toString()));
@@ -34,45 +22,6 @@ public class ConfigManager {
                          return Integer.parseInt(Objects.requireNonNull(defaults(value).toString()));}
                     catch (Exception e2) {
                          ClientTweaks.LOGGER.error("Your defaults couldn't be casted to Integer");
-                              return 0;
-                    }
-               }
-          }
-          default Long longOption(JSONObject options, String value){
-               try {
-                    return Long.parseLong(Objects.requireNonNull(options.get(value).toString()));
-               }
-               catch (Exception e1) {
-                    try {
-                         return Long.parseLong(Objects.requireNonNull(defaults(value).toString()));}
-                    catch (Exception e2) {
-                         ClientTweaks.LOGGER.error("Your defaults couldn't be casted to Long");
-                              return 0L;
-                    }
-               }
-          }
-          default Short shortOption(JSONObject options, String value){
-               try {
-                    return Short.parseShort(Objects.requireNonNull(options.get(value).toString()));
-               }
-               catch (Exception e1) {
-                    try {
-                         return Short.parseShort(Objects.requireNonNull(defaults(value).toString()));}
-                    catch (Exception e2) {
-                         ClientTweaks.LOGGER.error("Your defaults couldn't be casted to Short");
-                              return 0;
-                    }
-               }
-          }
-          default Byte byteOption(JSONObject options, String value){
-               try {
-                    return Byte.parseByte(Objects.requireNonNull(options.get(value).toString()));
-               }
-               catch (Exception e1) {
-                    try {
-                         return Byte.parseByte(Objects.requireNonNull(defaults(value).toString()));}
-                    catch (Exception e2) {
-                         ClientTweaks.LOGGER.error("Your defaults couldn't be casted to Byte");
                               return 0;
                     }
                }

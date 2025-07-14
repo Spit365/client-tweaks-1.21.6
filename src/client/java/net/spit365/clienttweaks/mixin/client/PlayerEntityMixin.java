@@ -12,6 +12,6 @@ import static net.spit365.clienttweaks.skillissue.SkillIssue.range;
 public class PlayerEntityMixin {
       @Inject(method = "getEntityInteractionRange", at = @At("HEAD"), cancellable = true)
       public void getEntityInteractionRange(CallbackInfoReturnable<Double> cir) {
-           if (range.isRange) cir.setReturnValue(10d);
+           if (range.activated) cir.setReturnValue(10d);
       }
 }

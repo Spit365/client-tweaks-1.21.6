@@ -1,4 +1,4 @@
-package net.spit365.clienttweaks.entity.renderer;
+package net.spit365.clienttweaks.custom.entity.renderer;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -10,7 +10,7 @@ import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
-import net.spit365.clienttweaks.entity.model.TailModel;
+import net.spit365.clienttweaks.custom.entity.model.TailModel;
 import net.spit365.clienttweaks.manager.ConfigManager;
 
 @Environment(EnvType.CLIENT)

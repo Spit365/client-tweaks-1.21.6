@@ -1,4 +1,4 @@
-package net.spit365.clienttweaks.entity.renderer;
+package net.spit365.clienttweaks.custom.entity.renderer;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;

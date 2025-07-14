@@ -1,44 +1,70 @@
 package net.spit365.clienttweaks.skillissue;
 
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.math.Vec3d;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.client.util.InputUtil;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
+import org.lwjgl.glfw.GLFW;
+import java.util.*;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+public class SkillIssue {
+     public static int targetIndex = 0;
 
-public abstract class SkillIssue {
-     public SkillIssue(){skillIssues.add(this);}
+     public static KeyBinding NEXT_TARGET_KEY = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                  "key.client-tweaks.next_target",
+                  InputUtil.Type.KEYSYM,
+                  GLFW.GLFW_KEY_RIGHT,
+                  "key.categories.client-tweaks"
+     ));
+     public static KeyBinding PREVIOUS_TARGET_KEY = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                  "key.client-tweaks.previous_target",
+                  InputUtil.Type.KEYSYM,
+                  GLFW.GLFW_KEY_LEFT,
+                  "key.categories.client-tweaks"
+     ));
+     public static KeyBinding RESET_TARGET_KEY = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                  "key.client-tweaks.reset_target",
+                  InputUtil.Type.KEYSYM,
+                  GLFW.GLFW_KEY_DOWN,
+                  "key.categories.client-tweaks"
+     ));
 
-     private static final List<SkillIssue> skillIssues = new LinkedList<>();
 
-     protected @Nullable LivingEntity selectNearestEntity(Vec3d pos, ClientWorld world, Entity... exceptions) {
-          LivingEntity closestEntity = null;
-          for (Entity entity : world.getEntities()) {
-               if (
-                       !Arrays.asList(exceptions).contains(entity) &&
-                               entity.getPos().squaredDistanceTo(pos) < 1000 &&
-                               entity instanceof LivingEntity livingEntity && (
-                               closestEntity == null ||
-                                       closestEntity.getPos().squaredDistanceTo(pos) > entity.getPos().squaredDistanceTo(pos))
-               ) closestEntity = livingEntity;
-          }
-          return closestEntity;
+     public abstract static class Normal {
+          public Normal(){normals.add(this);}
+
+          private static final List<Normal> normals = new LinkedList<>();
+          abstract KeyBinding key();
+          abstract void onKeyPressed(MinecraftClient client);
      }
-     public abstract KeyBinding key();
-     public abstract void onKeyPressed(MinecraftClient client);
-     public abstract void register();
+     public abstract static class Toggleable {
+          public Toggleable(Boolean activated){
+               toggleables.add(this);
+               this.activated = activated;
+          }
+
+          private static final List<Toggleable> toggleables = new LinkedList<>();
+          abstract KeyBinding key();
+          public boolean activated;
+     }
 
      public static LockOn lockOn = new LockOn();
      public static Teleport teleport = new Teleport();
      public static Range range = new Range();
+     public static Glowing glowing = new Glowing();
+
+     public static void keybindLogic(MinecraftClient client){
+          Normal.normals.forEach(normal -> {if (normal.key().wasPressed()) normal.onKeyPressed(client);});
+          Toggleable.toggleables.forEach(toggleable -> {if (toggleable.key().wasPressed()) {
+               toggleable.activated = !toggleable.activated;
+               client.inGameHud.setOverlayMessage(Text.literal(toggleable.getClass().getSimpleName() + " has been toggled " + (toggleable.activated? "§aon" : "§coff")), false);
+          }});
+     }
 
      public static void init(){
-          skillIssues.forEach(SkillIssue::register);
+          Normal.normals.forEach(Normal::key);
+          Toggleable.toggleables.forEach(Toggleable::key);
      }
 }

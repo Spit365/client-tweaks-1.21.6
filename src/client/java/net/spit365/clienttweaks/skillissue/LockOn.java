@@ -7,34 +7,27 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.Vec3d;
+import net.spit365.clienttweaks.mod.ClientMethods;
 import org.lwjgl.glfw.GLFW;
 
 import static net.minecraft.util.math.MathHelper.lerp;
 import static net.minecraft.util.math.MathHelper.lerpAngleDegrees;
 
-public class LockOn extends SkillIssue{
-     private static KeyBinding LOCK_ON_KEY;
+public class LockOn extends SkillIssue.Toggleable{
+     public LockOn() {super(false);}
+
      @Override public KeyBinding key() {return LOCK_ON_KEY;}
-     @Override public void register() {
-          LOCK_ON_KEY = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                  "key.client-tweaks.toggle_lock_on",
-                  InputUtil.Type.KEYSYM,
-                  GLFW.GLFW_KEY_Q,
-                  "key.categories.client-tweaks"
-          ));
-     }
-
-     @Override
-     public void onKeyPressed(MinecraftClient client) {
-          isLockOn = !isLockOn;
-     }
-
-     public boolean isLockOn = false;
+     private static final KeyBinding LOCK_ON_KEY = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+             "key.client-tweaks.toggle_lock_on",
+             InputUtil.Type.KEYSYM,
+             GLFW.GLFW_KEY_Q,
+             "key.categories.client-tweaks"
+     ));
 
      public void tick(MinecraftClient client) {
           ClientPlayerEntity player = client.player;
-          if (client.world != null && player != null && isLockOn) {
-               LivingEntity closestEntity = selectNearestEntity(player.getEyePos(), client.world, player);
+          if (client.world != null && player != null && this.activated) {
+               LivingEntity closestEntity = ClientMethods.selectNearestEntity(player.getEyePos(), client.world, player);
                if (closestEntity != null){
                     Vec3d targetVec = closestEntity.getEyePos().subtract(player.getEyePos()).normalize();
 
