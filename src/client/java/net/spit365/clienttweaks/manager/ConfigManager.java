@@ -93,6 +93,6 @@ public class ConfigManager {
                writer.write(file.toJSONString(JSONStyle.NO_COMPRESS));
           }
           catch (Exception e) {
-               ClientTweaks.LOGGER.error("Failed to write config file: {}", e.getMessage());}
+               ClientTweaks.LOGGER.error("Failed to write to the config file: {}", e.getMessage());}
      }
 }

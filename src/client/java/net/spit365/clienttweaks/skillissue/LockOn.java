@@ -32,7 +32,7 @@ public class LockOn extends SkillIssue.Toggleable{
                     Vec3d targetVec = closestEntity.getEyePos().subtract(player.getEyePos()).normalize();
 
                     float rootDistance = (float) Math.pow(player.getEyePos().distanceTo(closestEntity.getEyePos()), 0.5);
-                    float smoothing = rootDistance == 0? 1f : 1f / rootDistance;
+                    float smoothing = rootDistance == 0? 1f : Math.min(1f, 1f / rootDistance);
                     player.rotate(
                          lerpAngleDegrees(smoothing, player.getYaw(), (float) Math.toDegrees(Math.atan2(-targetVec.x, targetVec.z))),
                          lerp(smoothing, player.getPitch(), (float) Math.toDegrees(-Math.asin(targetVec.y)))
