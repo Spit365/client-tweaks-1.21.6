@@ -14,8 +14,8 @@ public class BloodCoveredModel<T extends EntityRenderState> extends EntityModel<
 	public static TexturedModelData getTexturedModelData() {
 		ModelData modelData = new ModelData();
 		ModelPartData modelPartData = modelData.getRoot();
-		modelPartData.addChild("right", ModelPartBuilder.create().uv(0, 0).cuboid(-4.0F, -12.0F, -2.0F, 4.0F, 12.0F, 4.0F, new Dilation(0.5F)), ModelTransform.origin(0.0F, 24.0F, 0.0F));
-		modelPartData.addChild("left", ModelPartBuilder.create().uv(0, 16).cuboid(0.0F, -12.0F, -2.0F, 4.0F, 12.0F, 4.0F, new Dilation(0.5F)), ModelTransform.origin(0.0F, 24.0F, 0.0F));
+		modelPartData.addChild("right", ModelPartBuilder.create().uv(0, 0).cuboid(-4f, -12f, -2f, 4f, 12f, 4f, new Dilation(0.5f)), ModelTransform.origin(0f, 24f, 0f));
+		modelPartData.addChild("left", ModelPartBuilder.create().uv(0, 16).cuboid(0f, -12f, -2f, 4f, 12f, 4f, new Dilation(0.5f)), ModelTransform.origin(0f, 24f, 0f));
 		return TexturedModelData.of(modelData, 32, 32);
 	}
 }

@@ -73,9 +73,8 @@ public class SporeFeatureRenderer extends FeatureRenderer<PlayerEntityRenderStat
           return switch (value){
                case "x", "z" -> 0d;
                case "y" -> 1d;
-               case "vx", "vz" -> 1.0E-6f;
-               case "vy" -> 1.0E-4f;
-               case "particle" -> "minecraft:crimson_spore";
+               case "vx", "vz", "vy" -> 0f;
+			case "particle" -> "minecraft:crimson_spore";
                case "minParticle" -> 2;
                case "maxParticle" -> 4;
                case "minCooldown" -> 30;

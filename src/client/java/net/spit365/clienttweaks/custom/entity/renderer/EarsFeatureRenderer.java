@@ -24,9 +24,8 @@ public class EarsFeatureRenderer extends FeatureRenderer<PlayerEntityRenderState
           	matrices.push();
 			matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(state.relativeHeadYaw));
 			matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(state.pitch));
-			if (state.isInSneakingPose)
-				matrices.translate(0.0F, 0.25F, 0.0F);
-        		EarsModel.getTexturedModelData().createModel().render(matrices, vertexConsumers.getBuffer(RenderLayer.getArmorCutoutNoCull(EarsModel.TEXTURE)), light, LivingEntityRenderer.getOverlay(state, 0f));
+			if (state.isInSneakingPose) matrices.translate(0f, 0.2f, 0f);
+			EarsModel.getTexturedModelData().createModel().render(matrices, vertexConsumers.getBuffer(RenderLayer.getArmorCutoutNoCull(EarsModel.TEXTURE)), light, LivingEntityRenderer.getOverlay(state, 0f));
 			matrices.pop();
 		}
 	}

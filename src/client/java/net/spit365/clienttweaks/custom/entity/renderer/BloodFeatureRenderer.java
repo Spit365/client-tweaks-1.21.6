@@ -40,10 +40,10 @@ public class BloodFeatureRenderer extends FeatureRenderer<PlayerEntityRenderStat
 		}
 	}
 	private void applyPartTransform(MatrixStack matrices, ModelPart part) {
-		matrices.translate(part.originX / 16.0F, part.originY / 16.0F, part.originZ / 16.0F);
-		if (part.roll != 0.0F) matrices.multiply(RotationAxis.POSITIVE_Z.rotation(part.roll));
-		if (part.yaw != 0.0F) matrices.multiply(RotationAxis.POSITIVE_Y.rotation(part.yaw));
-		if (part.pitch != 0.0F) matrices.multiply(RotationAxis.POSITIVE_X.rotation(part.pitch));
-		matrices.translate(-part.originX / 16.0F, -part.originY / 16.0F, -part.originZ / 16.0F);
+		matrices.translate(part.originX / 16f, part.originY / 16f, part.originZ / 16f);
+		if (part.roll != 0f) matrices.multiply(RotationAxis.POSITIVE_Z.rotation(part.roll));
+		if (part.yaw != 0f) matrices.multiply(RotationAxis.POSITIVE_Y.rotation(part.yaw));
+		if (part.pitch != 0f) matrices.multiply(RotationAxis.POSITIVE_X.rotation(part.pitch));
+		matrices.translate(-part.originX / 16f, -part.originY / 16f, -part.originZ / 16f);
 	}
 }

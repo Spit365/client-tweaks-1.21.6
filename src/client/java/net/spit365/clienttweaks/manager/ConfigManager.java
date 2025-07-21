@@ -9,7 +9,7 @@ import java.io.*;
 import java.util.Objects;
 
 public class ConfigManager {
-     public static final String path = "config/tailed.json";
+     public static final String path = "config/" + ClientTweaks.MOD_ID + ".json";
 
      public interface DefaultedJsonReader {
           default Integer intOption(JSONObject options, String value){

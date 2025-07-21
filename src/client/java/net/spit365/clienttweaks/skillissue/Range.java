@@ -12,7 +12,7 @@ public class Range extends SkillIssue.Toggleable{
      private static final KeyBinding RANGE_KEY = KeyBindingHelper.registerKeyBinding(new KeyBinding(
              "key.client-tweaks.toggle_range",
              InputUtil.Type.KEYSYM,
-             GLFW.GLFW_KEY_APOSTROPHE,
+             GLFW.GLFW_KEY_UNKNOWN,
              "key.categories.client-tweaks"
      ));
 }

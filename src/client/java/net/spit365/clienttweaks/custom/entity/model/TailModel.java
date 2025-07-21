@@ -3,15 +3,11 @@ package net.spit365.clienttweaks.custom.entity.model;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.state.EntityRenderState;
-import net.minecraft.util.Identifier;
-import net.spit365.clienttweaks.ClientTweaks;
 
 public class TailModel<T extends EntityRenderState> extends EntityModel<T> {
 	public TailModel(ModelPart root) {super(root);}
 
-	public static final Identifier TEXTURE = Identifier.of(ClientTweaks.MOD_ID, "textures/entity/tail_feature.png");
-
-     public static TexturedModelData getTexturedModelData() {
+	public static TexturedModelData getTexturedModelData() {
 		ModelData modelData = new ModelData();
      	ModelPartData tail = modelData.getRoot().addChild("tail", ModelPartBuilder.create(), ModelTransform.of(0f, 10f, 2f, 0, 0, (float) Math.sin(System.currentTimeMillis() / 500d) / 3f));
 

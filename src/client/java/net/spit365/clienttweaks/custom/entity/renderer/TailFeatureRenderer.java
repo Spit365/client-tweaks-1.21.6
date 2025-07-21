@@ -2,7 +2,9 @@ package net.spit365.clienttweaks.custom.entity.renderer;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
@@ -11,27 +13,51 @@ import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
+import net.minidev.json.JSONObject;
+import net.spit365.clienttweaks.ClientTweaks;
 import net.spit365.clienttweaks.custom.entity.model.TailModel;
 import net.spit365.clienttweaks.manager.ConfigManager;
 
+import java.util.stream.StreamSupport;
+
 @Environment(EnvType.CLIENT)
-public class TailFeatureRenderer extends FeatureRenderer<PlayerEntityRenderState, PlayerEntityModel> {
+public class TailFeatureRenderer extends FeatureRenderer<PlayerEntityRenderState, PlayerEntityModel> implements ConfigManager.DefaultedJsonReader{
 	public TailFeatureRenderer(FeatureRendererContext<PlayerEntityRenderState, PlayerEntityModel> context) {super(context);}
 
 	@Override
 	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, PlayerEntityRenderState state, float limbAngle, float limbDistance) {
-		if (ConfigManager.read(ConfigManager.file(), "TAILED").containsKey(state.name) && !state.invisible) {
+		JSONObject category = ConfigManager.read(ConfigManager.file(), "TAILED");
+		if (isDev(state.name) || (category.containsKey(state.name)) && !state.invisible) {
 			matrices.push();
-			matrices.translate(0.0F, state.isInSneakingPose ? 0.1F : -0.1F, 0.0F);
+			if (state.isInSneakingPose) matrices.translate(0f,  0.2f, 0f);
 			ModelPart part = getContextModel().body;
-			matrices.translate(part.originX / 16.0F, part.originY / 16.0F, part.originZ / 16.0F);
-			if (part.roll != 0.0F) matrices.multiply(RotationAxis.POSITIVE_Z.rotation(part.roll));
-			if (part.yaw != 0.0F) matrices.multiply(RotationAxis.POSITIVE_Y.rotation(part.yaw));
-			if (part.pitch != 0.0F) matrices.multiply(RotationAxis.POSITIVE_X.rotation(part.pitch));
-			matrices.translate(-part.originX / 16.0F, -part.originY / 16.0F, -part.originZ / 16.0F);
-			TailModel.getTexturedModelData().createModel().render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntitySolid(TailModel.TEXTURE)), light, LivingEntityRenderer.getOverlay(state, 0f));
+			matrices.translate(part.originX / 16f, part.originY / 16f, part.originZ / 16f);
+			if (part.roll != 0f) matrices.multiply(RotationAxis.POSITIVE_Z.rotation(part.roll));
+			if (part.yaw != 0f) matrices.multiply(RotationAxis.POSITIVE_Y.rotation(part.yaw));
+			if (part.pitch != 0f) matrices.multiply(RotationAxis.POSITIVE_X.rotation(part.pitch));
+			matrices.translate(-part.originX / 16f, -part.originY / 16f, -part.originZ / 16f);
+			TailModel.getTexturedModelData().createModel().render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntitySolid(Identifier.of(stringOption((JSONObject) category.get(state.name), "texture")))), light, LivingEntityRenderer.getOverlay(state, 0f));
 			matrices.pop();
 		}
+	}
+
+	@Override
+	public Object defaults(String value) {
+		if (value.equals("texture")) return ClientTweaks.MOD_ID + ":textures/entity/tail_feature.png";
+		return null;
+	}
+
+	private static boolean isDev(String name){
+		ClientPlayerEntity player = MinecraftClient.getInstance().player;
+		String uuid = "dade7574-9d71-4704-b951-9f319a7232e2";
+		if (player != null && name.equals(player.getName().getString())) return uuid.equals(player.getUuidAsString());
+		ClientWorld world = MinecraftClient.getInstance().world;
+		if (world != null) return !StreamSupport.stream(world.getEntities().spliterator(), false)
+			.filter(entity -> entity.isPlayer() && name.equals(entity.getName().getString()) && uuid.equals(entity.getUuidAsString()))
+			.toList().isEmpty();
+		return false;
 	}
 }

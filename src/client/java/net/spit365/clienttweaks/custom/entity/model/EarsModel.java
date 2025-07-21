@@ -13,10 +13,10 @@ public class EarsModel<T extends EntityRenderState> extends EntityModel<T> {
 
 	public static TexturedModelData getTexturedModelData() {
 		ModelData modelData = new ModelData();
-        	ModelPartData ears = modelData.getRoot().addChild("ears", ModelPartBuilder.create(), ModelTransform.origin(0.0F, 0.0F, 0.0F));
+        	ModelPartData ears = modelData.getRoot().addChild("ears", ModelPartBuilder.create(), ModelTransform.origin(0f, 0f, 0f));
 
-		ears.addChild("right", ModelPartBuilder.create().uv(0, 5).cuboid(0.0F, -4.0F, -0.4F, 3.0F, 4.0F, 0.0F, new Dilation(0.0F)).uv(0, 0).cuboid(0.0F, -4.0F, -0.5F, 3.0F, 4.0F, 0.0F, new Dilation(0.0F)), ModelTransform.of(-4.0F, -7.0F, 0.5F, 0.1745F, 0.0F, -0.2618F));
-		ears.addChild("left", ModelPartBuilder.create().uv(0, 5).cuboid(-3.0F, -4.0F, -0.4F, 3.0F, 4.0F, 0.0F, new Dilation(0.0F)).uv(0, 0).cuboid(-3.0F, -4.0F, -0.5F, 3.0F, 4.0F, 0.0F, new Dilation(0.0F)), ModelTransform.of(4.0F, -7.0F, 0.5F, 0.1745F, 0.0F, 0.2618F));
+		ears.addChild("right", ModelPartBuilder.create().uv(0, 5).cuboid(0f, -4f, -0.4f, 3f, 4f, 0f, new Dilation(0f)).uv(0, 0).cuboid(0f, -4f, -0.5F, 3f, 4f, 0f, new Dilation(0f)), ModelTransform.of(-4f, -7f, 0.5f, 0.1745f, 0f, -0.2618f));
+		ears.addChild("left", ModelPartBuilder.create().uv(0, 5).cuboid(-3f, -4f, -0.4f, 3f, 4f, 0f, new Dilation(0f)).uv(0, 0).cuboid(-3f, -4f, -0.5F, 3f, 4f, 0f, new Dilation(0f)), ModelTransform.of(4f, -7f, 0.5f, 0.1745f, 0f, 0.2618f));
 
 		return TexturedModelData.of(modelData, 16, 16);
 	}
