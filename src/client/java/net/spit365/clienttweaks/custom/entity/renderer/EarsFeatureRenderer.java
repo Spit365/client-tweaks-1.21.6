@@ -10,9 +10,9 @@ import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.RotationAxis;
 import net.spit365.clienttweaks.custom.entity.model.EarsModel;
 import net.spit365.clienttweaks.manager.ConfigManager;
+import net.spit365.clienttweaks.mod.ClientMethods;
 
 @Environment(EnvType.CLIENT)
 public class EarsFeatureRenderer extends FeatureRenderer<PlayerEntityRenderState, PlayerEntityModel> {
@@ -22,12 +22,10 @@ public class EarsFeatureRenderer extends FeatureRenderer<PlayerEntityRenderState
 	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, PlayerEntityRenderState state, float limbAngle, float limbDistance) {
 		if (ConfigManager.read(ConfigManager.file(), "EARS").containsKey(state.name) && !state.invisible) {
           	matrices.push();
-			matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(state.relativeHeadYaw));
-			matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(state.pitch));
-			if (state.isInSneakingPose) matrices.translate(0f, 0.2f, 0f);
+			ClientMethods.applyPartTransform(matrices, getContextModel().head);
+			if (state.isInSneakingPose) matrices.translate(0f, 0.25f, 0f);
 			EarsModel.getTexturedModelData().createModel().render(matrices, vertexConsumers.getBuffer(RenderLayer.getArmorCutoutNoCull(EarsModel.TEXTURE)), light, LivingEntityRenderer.getOverlay(state, 0f));
 			matrices.pop();
 		}
 	}
-
 }

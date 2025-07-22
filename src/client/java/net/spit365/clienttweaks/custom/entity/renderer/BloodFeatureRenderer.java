@@ -15,6 +15,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.spit365.clienttweaks.custom.entity.model.BloodCoveredModel;
 import net.minecraft.util.math.RotationAxis;
 import net.spit365.clienttweaks.custom.particle.BloodParticle;
+import net.spit365.clienttweaks.mod.ClientMethods;
 
 public class BloodFeatureRenderer extends FeatureRenderer<PlayerEntityRenderState, PlayerEntityModel> {
 	public BloodFeatureRenderer(FeatureRendererContext<PlayerEntityRenderState, PlayerEntityModel> context) {super(context);}
@@ -29,21 +30,14 @@ public class BloodFeatureRenderer extends FeatureRenderer<PlayerEntityRenderStat
 			ModelPart bloodModel = BloodCoveredModel.getTexturedModelData().createModel();
 
 			matrices.push();
-			applyPartTransform(matrices, playerModel.rightLeg);
+			ClientMethods.applyPartTransform(matrices, playerModel.rightLeg);
 			bloodModel.getChild("right").render(matrices, buffer, light, overlay);
 			matrices.pop();
 
 			matrices.push();
-			applyPartTransform(matrices, playerModel.leftLeg);
+			ClientMethods.applyPartTransform(matrices, playerModel.leftLeg);
 			bloodModel.getChild("left").render(matrices, buffer, light, overlay);
 			matrices.pop();
 		}
-	}
-	private void applyPartTransform(MatrixStack matrices, ModelPart part) {
-		matrices.translate(part.originX / 16f, part.originY / 16f, part.originZ / 16f);
-		if (part.roll != 0f) matrices.multiply(RotationAxis.POSITIVE_Z.rotation(part.roll));
-		if (part.yaw != 0f) matrices.multiply(RotationAxis.POSITIVE_Y.rotation(part.yaw));
-		if (part.pitch != 0f) matrices.multiply(RotationAxis.POSITIVE_X.rotation(part.pitch));
-		matrices.translate(-part.originX / 16f, -part.originY / 16f, -part.originZ / 16f);
 	}
 }

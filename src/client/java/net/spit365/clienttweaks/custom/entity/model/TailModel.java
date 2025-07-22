@@ -7,9 +7,9 @@ import net.minecraft.client.render.entity.state.EntityRenderState;
 public class TailModel<T extends EntityRenderState> extends EntityModel<T> {
 	public TailModel(ModelPart root) {super(root);}
 
-	public static TexturedModelData getTexturedModelData() {
+	public static ModelPart getModel(boolean isSneaking) {
 		ModelData modelData = new ModelData();
-     	ModelPartData tail = modelData.getRoot().addChild("tail", ModelPartBuilder.create(), ModelTransform.of(0f, 10f, 2f, 0, 0, (float) Math.sin(System.currentTimeMillis() / 500d) / 3f));
+     	ModelPartData tail = modelData.getRoot().addChild("tail", ModelPartBuilder.create(), ModelTransform.of(0f, 10f, 2f, isSneaking? 1 : 0, 0, (float) Math.sin(System.currentTimeMillis() / (isSneaking? 100d : 500d)) / 3f));
 
 		tail.addChild("t1", ModelPartBuilder.create().uv(2, 0).cuboid(-2f, -1.125f, -1f, 4f, 2.25f, 2f, new Dilation(0f)), ModelTransform.origin(0f, 0.504f, 1.25f));
 		tail.addChild("t2", ModelPartBuilder.create().uv(1, 3).cuboid(-2.25f, -1.5f, -1.125f, 4.5f, 3f, 2.25f, new Dilation(0f)), ModelTransform.of(0f, 1.2345f, 1.985f, -0.7854f, 0f, 0f));
@@ -25,6 +25,6 @@ public class TailModel<T extends EntityRenderState> extends EntityModel<T> {
      	tail.addChild("t12", ModelPartBuilder.create().uv(5, 29).cuboid(-1.25f, -1.125f, -0.5f, 2.5f, 2.25f, 1f, new Dilation(0f)), ModelTransform.of(0f, 6.798f, 11.1969f, 0.3927f, 0f, 0f));
      	tail.addChild("t13", ModelPartBuilder.create().uv(6, 30).cuboid(-0.75f, -0.625f, -0.25f, 1.5f, 1.25f, 0.5f, new Dilation(0f)), ModelTransform.of(0f, 6.5109f, 11.8898f, 0.3927f, 0f, 0f));
 
-		return TexturedModelData.of(modelData, 16, 32);
+		return TexturedModelData.of(modelData, 16, 32).createModel();
 	}
 }
