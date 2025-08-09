@@ -20,8 +20,8 @@ public class MinecraftClientMixin {
 
      @Inject(method = "hasOutline", at = @At("HEAD"), cancellable = true)
      public void hasOutline(Entity entity, CallbackInfoReturnable<Boolean> cir){
-          if (SkillIssue.glowing.activated) cir.setReturnValue(true);
-          else if (SkillIssue.lockOn.activated && player != null && world != null)
+          if (SkillIssue.glowing.isOn()) cir.setReturnValue(true);
+          else if (SkillIssue.glowing.isOn() && player != null && world != null)
                cir.setReturnValue(entity.isGlowing() || entity.equals(ClientMethods.selectNearestEntity(player.getEyePos(), world, player)));
      }
 }
