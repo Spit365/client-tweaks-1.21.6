@@ -24,7 +24,7 @@ public class BloodFeatureRenderer extends FeatureRenderer<PlayerEntityRenderStat
 	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, PlayerEntityRenderState state, float limbAngle, float limbDistance) {
 		ClientPlayerEntity player = MinecraftClient.getInstance().player;
 		if (player != null && BloodParticle.isTouchingBlood(player.getPos())) {
-			VertexConsumer buffer = vertexConsumers.getBuffer(RenderLayer.createArmorTranslucent(BloodCoveredModel.TEXTURE));
+			VertexConsumer buffer = vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(BloodCoveredModel.TEXTURE));
 			int overlay = LivingEntityRenderer.getOverlay(state, 0f);
 			PlayerEntityModel playerModel = getContextModel();
 			ModelPart bloodModel = BloodCoveredModel.getTexturedModelData().createModel();
