@@ -4,7 +4,6 @@ import net.fabricmc.api.ClientModInitializer;
 import net.spit365.clienttweaks.mod.ClientCommands;
 import net.spit365.clienttweaks.mod.ClientTick;
 import net.spit365.clienttweaks.mod.ModParticles;
-import net.spit365.clienttweaks.skillissue.SkillIssue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,9 +13,7 @@ public class ClientTweaks implements ClientModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
 	@Override public void onInitializeClient() {
-		SkillIssue.init();
 		ClientCommands.init();
-		SkillIssue.init();
 		ClientTick.init();
 		ModParticles.init();
 	}

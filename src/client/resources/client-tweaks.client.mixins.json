@@ -3,7 +3,6 @@
   "package": "net.spit365.clienttweaks.mixin.client",
   "compatibilityLevel": "JAVA_21",
   "client": [
-    "MinecraftClientMixin",
     "PlayerEntityRendererMixin"
   ],
   "injectors": {

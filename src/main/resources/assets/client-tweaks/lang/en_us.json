@@ -3,8 +3,6 @@
   "key.client-tweaks.next_target" : "Next Target",
   "key.client-tweaks.previous_target" : "Previous Target",
   "key.client-tweaks.reset_target" : "Reset Target",
-  "key.client-tweaks.teleport" : "Teleport (don't use with anticheat)",
   "key.client-tweaks.toggle_glowing" : "Toggle Glowing",
-  "key.client-tweaks.toggle_lock_on" : "Toggle LockOn",
-  "key.client-tweaks.toggle_range" : "Toggle Range (don't use with anticheat)"
+  "key.client-tweaks.toggle_lock_on" : "Toggle LockOn"
 }
