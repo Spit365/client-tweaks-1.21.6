@@ -19,7 +19,7 @@ public class ClientGui {
 				PlayerInventory inventory = player.getInventory();
 				int x = context.getScaledWindowWidth() -20;
 				renderItem(context, inventory, x, 0, instance, EquipmentSlot.HEAD);
-				renderItem(context, inventory, x, 20, instance, EquipmentSlot.BODY);
+				renderItem(context, inventory, x, 20, instance, EquipmentSlot.CHEST);
 				renderItem(context, inventory, x, 40, instance, EquipmentSlot.LEGS);
 				renderItem(context, inventory, x, 60, instance, EquipmentSlot.FEET);
 			}
