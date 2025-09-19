@@ -65,7 +65,7 @@ public class SporeFeatureRenderer extends FeatureRenderer<PlayerEntityRenderStat
      }
 
      public static void tick(){
-          sporeFeatureRenderers.forEach(sporeFeatureRenderer -> sporeFeatureRenderer.sporesCounter--);
+          if (!MinecraftClient.getInstance().isPaused()) sporeFeatureRenderers.forEach(sporeFeatureRenderer -> sporeFeatureRenderer.sporesCounter--);
      }
 
      @Override

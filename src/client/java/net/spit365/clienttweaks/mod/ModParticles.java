@@ -17,7 +17,7 @@ public class ModParticles {
           return particle;
      }
 
-     public static final SimpleParticleType BLOOD = register("blood", false, BloodParticle.BloodParticleFactory::new);
+     public static final SimpleParticleType BLOOD = register("blood", false, BloodParticle::getBloodParticleFactory);
 
      public static void init(){}
 }

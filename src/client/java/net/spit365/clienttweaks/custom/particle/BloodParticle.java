@@ -11,6 +11,7 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
 
@@ -52,10 +53,8 @@ public class BloodParticle extends SpriteBillboardParticle {
 
           Vec3d camPos = camera.getPos();
 
-          double priority = 0.001 * (bloodParticles.indexOf(this) +1);
-
-          float px = (float)(MathHelper.lerp(tickProgress, lastX, x) - camPos.getX());
-          float py = (float)(MathHelper.lerp(tickProgress, lastY, y) - camPos.getY() + priority);
+		float px = (float)(MathHelper.lerp(tickProgress, lastX, x) - camPos.getX());
+          float py = (float)(MathHelper.lerp(tickProgress, lastY, y) - camPos.getY() + 0.001 * Math.toIntExact(bloodParticles.stream().filter(bloodParticle -> Math.abs(bloodParticle.age - this.age) <= 1).count() +1));
           float pz = (float)(MathHelper.lerp(tickProgress, lastZ, z) - camPos.getZ());
 
           int light = getBrightness(tickProgress);
@@ -66,19 +65,10 @@ public class BloodParticle extends SpriteBillboardParticle {
           vertexConsumer.vertex(px + halfSize, py, pz - halfSize).texture(maxU, minV).color(red, green, blue, alpha).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(0, 1, 0);
      }
 
+	public static @NotNull ParticleFactory<SimpleParticleType> getBloodParticleFactory(SpriteProvider spriteProvider) {
+		return (SimpleParticleType type, ClientWorld world, double x, double y, double z, double dx, double dy, double dz) -> new BloodParticle(world, x, y, z, spriteProvider);
+	}
 
-     public static class BloodParticleFactory implements ParticleFactory<SimpleParticleType> {
-          private final SpriteProvider spriteProvider;
-
-          public BloodParticleFactory(SpriteProvider spriteProvider) {
-               this.spriteProvider = spriteProvider;
-          }
-
-          @Override
-          public BloodParticle createParticle(SimpleParticleType type, ClientWorld world, double x, double y, double z, double dx, double dy, double dz) {
-               return new BloodParticle(world, x, y, z, spriteProvider);
-          }
-     }
      public static boolean isTouchingBlood(Vec3d pos){
           return bloodParticles.stream().anyMatch(bloodParticle -> pos.squaredDistanceTo(bloodParticle.x, bloodParticle.y, bloodParticle.z) < 0.25);
      }
