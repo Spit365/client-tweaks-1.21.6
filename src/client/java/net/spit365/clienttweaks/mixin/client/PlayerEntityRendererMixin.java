@@ -8,10 +8,7 @@ import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
-import net.spit365.clienttweaks.custom.entity.renderer.BloodFeatureRenderer;
-import net.spit365.clienttweaks.custom.entity.renderer.EarsFeatureRenderer;
-import net.spit365.clienttweaks.custom.entity.renderer.SporeFeatureRenderer;
-import net.spit365.clienttweaks.custom.entity.renderer.TailFeatureRenderer;
+import net.spit365.clienttweaks.custom.entity.renderer.*;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -25,7 +22,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
      @Inject(at = @At("TAIL"), method = "<init>")
      public void init(EntityRendererFactory.Context ctx, boolean slim, CallbackInfo ci) {
           addFeature(new TailFeatureRenderer(this));
-          addFeature(new SporeFeatureRenderer(this));
+          addFeature(new ParticleFeatureRenderer(this));
           addFeature(new EarsFeatureRenderer(this));
           addFeature(new BloodFeatureRenderer(this));
      }

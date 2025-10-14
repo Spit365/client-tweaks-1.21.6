@@ -15,35 +15,36 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.Random;
 import net.spit365.clienttweaks.manager.ConfigManager;
 import net.minidev.json.JSONObject;
+import net.spit365.clienttweaks.manager.CosmeticManager;
 
 import java.util.LinkedList;
 import java.util.List;
 
 
-public class SporeFeatureRenderer extends FeatureRenderer<PlayerEntityRenderState, PlayerEntityModel> implements ConfigManager.DefaultedJsonReader {
-     public SporeFeatureRenderer (FeatureRendererContext<PlayerEntityRenderState, PlayerEntityModel> context) {
+public class ParticleFeatureRenderer extends FeatureRenderer<PlayerEntityRenderState, PlayerEntityModel> implements ConfigManager.DefaultedJsonReader {
+     public ParticleFeatureRenderer(FeatureRendererContext<PlayerEntityRenderState, PlayerEntityModel> context) {
           super(context);
-          sporeFeatureRenderers.add(this);
+          particleFeatureRenderers.add(this);
           ClientPlayerEntity player = MinecraftClient.getInstance().player;
           if (player != null) random = player.getRandom();
           else random = Random.create();
      }
 
-     private static final List<SporeFeatureRenderer> sporeFeatureRenderers = new LinkedList<>();
+     private static final List<ParticleFeatureRenderer> particleFeatureRenderers = new LinkedList<>();
      private final Random random;
-     private int sporesCounter = 0;
+     private int particleCounter = 0;
 
      @Override
      public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, PlayerEntityRenderState state, float limbAngle, float limbDistance) {
           ClientWorld clientWorld = MinecraftClient.getInstance().world;
           ClientPlayerEntity player = MinecraftClient.getInstance().player;
-          JSONObject category = ConfigManager.read(ConfigManager.file(), "SPORES");
+          JSONObject category = CosmeticManager.getCosmetic("particles");
           if (
                category.containsKey(state.name) &&
                !state.invisible &&
                clientWorld != null &&
                player != null &&
-               sporesCounter <= 0
+               particleCounter <= 0
           ) {
                JSONObject options = (JSONObject) category.get(state.name);
                for (int i = 0; i < random.nextBetweenExclusive(
@@ -58,14 +59,14 @@ public class SporeFeatureRenderer extends FeatureRenderer<PlayerEntityRenderStat
                          random.nextGaussian() * floatOption(options, "vx"),
                          random.nextGaussian() * floatOption(options, "vy"),
                          random.nextGaussian() * floatOption(options, "vz"));
-               sporesCounter = random.nextBetweenExclusive(
+               particleCounter = random.nextBetweenExclusive(
                     intOption(options, "minCooldown"),
                     intOption(options, "maxCooldown"));
           }
      }
 
      public static void tick(){
-          if (!MinecraftClient.getInstance().isPaused()) sporeFeatureRenderers.forEach(sporeFeatureRenderer -> sporeFeatureRenderer.sporesCounter--);
+          if (!MinecraftClient.getInstance().isPaused()) particleFeatureRenderers.forEach(particleFeatureRenderer -> particleFeatureRenderer.particleCounter--);
      }
 
      @Override
@@ -74,7 +75,7 @@ public class SporeFeatureRenderer extends FeatureRenderer<PlayerEntityRenderStat
                case "x", "z" -> 0d;
                case "y" -> 1d;
                case "vx", "vz", "vy" -> 0f;
-			case "particle" -> "minecraft:crimson_spore";
+			   case "particle" -> "minecraft:crimson_spore";
                case "minParticle" -> 2;
                case "maxParticle" -> 4;
                case "minCooldown" -> 30;
