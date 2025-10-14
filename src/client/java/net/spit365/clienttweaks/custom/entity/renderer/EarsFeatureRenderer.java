@@ -20,7 +20,7 @@ public class EarsFeatureRenderer extends FeatureRenderer<PlayerEntityRenderState
 
 	@Override
 	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, PlayerEntityRenderState state, float limbAngle, float limbDistance) {
-		if (CosmeticManager.getCosmetic("ears").containsKey(state.name) && !state.invisible) {
+		if (CosmeticManager.getEnabledCosmetic("ears").containsKey(state.name) && !state.invisible) {
           	matrices.push();
 			ClientMethods.applyPartTransform(matrices, getContextModel().head);
 			if (state.isInSneakingPose) matrices.translate(0f, 0.25f, 0f);

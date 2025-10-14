@@ -21,7 +21,7 @@ public class CosmeticManager {
     public static final String ASSETS_FOLDER = ClientTweaks.CONFIG_FOLDER + "assets/";
     public static JSONObject[] loadedCustomCosmetics;
 
-    public static JSONObject[] getCosmetics(){
+    public static JSONObject[] getCustomCosmetics(){
         try (Stream<Path> paths = Files.walk(Paths.get(ASSETS_FOLDER))) {
             return paths.map(path -> {
                 try (BufferedReader reader = new BufferedReader(new FileReader(path.toFile()))) {
@@ -39,16 +39,29 @@ public class CosmeticManager {
         return new JSONObject[0];
     }
 
-    public static JSONObject getCosmetic(String id){
-        return ConfigManager.read(ConfigManager.file(), id);
+    public static JSONObject getEnabledCosmetics(){
+        return ConfigManager.read(ConfigManager.file(), "cosmetics");
+    }
+
+    public static JSONObject getEnabledCosmetic(String id){
+        return ConfigManager.read(getEnabledCosmetics(), id);
+    }
+    
+    public static void writeCosmetics(JSONObject cosmetics){
+        ConfigManager.write("cosmetic", cosmetics);
+    }
+    public static void writeCosmetic(String id, JSONObject cosmetic){
+        JSONObject cosmetics = CosmeticManager.getEnabledCosmetics();
+        cosmetics.put(id, cosmetic);
+        writeCosmetics(cosmetics);
     }
 
     public static void init(){
-        loadedCustomCosmetics = getCosmetics();
+        loadedCustomCosmetics = getCustomCosmetics();
         ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
             public static final Identifier ID = Identifier.of(ClientTweaks.MOD_ID, "custom_cosmetics");
             @Override public Identifier getFabricId() {return ID;}
-            @Override public void reload(ResourceManager manager) {loadedCustomCosmetics = getCosmetics();}
+            @Override public void reload(ResourceManager manager) {loadedCustomCosmetics = getCustomCosmetics();}
         });
     }
 }

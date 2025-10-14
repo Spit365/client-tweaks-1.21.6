@@ -38,7 +38,7 @@ public class ParticleFeatureRenderer extends FeatureRenderer<PlayerEntityRenderS
      public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, PlayerEntityRenderState state, float limbAngle, float limbDistance) {
           ClientWorld clientWorld = MinecraftClient.getInstance().world;
           ClientPlayerEntity player = MinecraftClient.getInstance().player;
-          JSONObject category = CosmeticManager.getCosmetic("particles");
+          JSONObject category = CosmeticManager.getEnabledCosmetic("particles");
           if (
                category.containsKey(state.name) &&
                !state.invisible &&

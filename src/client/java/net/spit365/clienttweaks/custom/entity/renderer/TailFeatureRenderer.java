@@ -3,7 +3,6 @@ package net.spit365.clienttweaks.custom.entity.renderer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -30,7 +29,7 @@ public class TailFeatureRenderer extends FeatureRenderer<PlayerEntityRenderState
 
 	@Override
 	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, PlayerEntityRenderState state, float limbAngle, float limbDistance) {
-		JSONObject category = CosmeticManager.getCosmetic("tail");
+		JSONObject category = CosmeticManager.getEnabledCosmetic("tail");
 		if (isDev(state.name) || (category.containsKey(state.name)) && !state.invisible) {
 			matrices.push();
 			if (state.isInSneakingPose) matrices.translate(0f,  0.2f, 0.1f);
