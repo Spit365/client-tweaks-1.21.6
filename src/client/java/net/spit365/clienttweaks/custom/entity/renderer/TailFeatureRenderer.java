@@ -19,6 +19,7 @@ import net.minidev.json.JSONObject;
 import net.spit365.clienttweaks.ClientTweaks;
 import net.spit365.clienttweaks.custom.entity.model.TailModel;
 import net.spit365.clienttweaks.manager.ConfigManager;
+import net.spit365.clienttweaks.manager.CosmeticManager;
 import net.spit365.clienttweaks.mod.ClientMethods;
 
 import java.util.stream.StreamSupport;
@@ -29,7 +30,7 @@ public class TailFeatureRenderer extends FeatureRenderer<PlayerEntityRenderState
 
 	@Override
 	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, PlayerEntityRenderState state, float limbAngle, float limbDistance) {
-		JSONObject category = ConfigManager.read(ConfigManager.file(), "TAILED");
+		JSONObject category = CosmeticManager.getCosmetic("tail");
 		if (isDev(state.name) || (category.containsKey(state.name)) && !state.invisible) {
 			matrices.push();
 			if (state.isInSneakingPose) matrices.translate(0f,  0.2f, 0.1f);

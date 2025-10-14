@@ -1,6 +1,7 @@
 package net.spit365.clienttweaks;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.spit365.clienttweaks.manager.CosmeticManager;
 import net.spit365.clienttweaks.mod.ClientCommands;
 import net.spit365.clienttweaks.mod.ClientGui;
 import net.spit365.clienttweaks.mod.ClientTick;
@@ -11,12 +12,14 @@ import org.slf4j.LoggerFactory;
 public class ClientTweaks implements ClientModInitializer {
 
 	public static final String MOD_ID = "client-tweaks";
-	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+    public static final String CONFIG_FOLDER = "config/" + MOD_ID + "/";
+    public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
 	@Override public void onInitializeClient() {
 		ClientGui.init();
 		ClientCommands.init();
 		ClientTick.init();
 		ModParticles.init();
+        CosmeticManager.init();
 	}
 }

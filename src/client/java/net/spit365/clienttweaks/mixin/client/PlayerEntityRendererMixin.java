@@ -25,5 +25,6 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
           addFeature(new ParticleFeatureRenderer(this));
           addFeature(new EarsFeatureRenderer(this));
           addFeature(new BloodFeatureRenderer(this));
+          addFeature(new ItemFeatureRenderer(this));
      }
 }
