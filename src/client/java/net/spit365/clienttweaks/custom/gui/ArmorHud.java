@@ -1,4 +1,4 @@
-package net.spit365.clienttweaks.mod;
+package net.spit365.clienttweaks.custom.gui;
 
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.minecraft.client.MinecraftClient;
@@ -11,23 +11,30 @@ import net.minecraft.component.type.EquippableComponent;
 import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.TippedArrowItem;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
+import net.minidev.json.JSONObject;
 import net.spit365.clienttweaks.ClientTweaks;
+import net.spit365.clienttweaks.manager.ConfigManager;
 
 import java.util.*;
 
-public class ClientGui {
-	private record ItemArmorContext(ItemStack stack, EquippableComponent equippableComponent, AttributeModifiersComponent attributeModifiersComponent) {}
+public class ArmorHud {
+
+    public static final String ARMOR_HUD_ID = "armor_hud";
+
+    private record ItemArmorContext(ItemStack stack, EquippableComponent equippableComponent, AttributeModifiersComponent attributeModifiersComponent) {}
 	private record CompareStats(int better, int equal, int worse, double sumDelta, int totalCandMods) {}
 
 	public static void init() {
-		HudElementRegistry.addFirst(Identifier.of(ClientTweaks.MOD_ID, "armor_hud"), (context, tickCounter) -> {
+		HudElementRegistry.addFirst(Identifier.of(ClientTweaks.MOD_ID, ARMOR_HUD_ID), (context, tickCounter) -> {
 			MinecraftClient instance = MinecraftClient.getInstance();
 			ClientPlayerEntity player = instance.player;
 			if (player == null) return;
@@ -35,10 +42,84 @@ public class ClientGui {
 			int x = context.getScaledWindowWidth() - 20;
 			int y = 0;
 
-			y = renderArmorHud(context, inventory, x, y, instance);
-			renderArrows(inventory, context, instance, x, y);
+			if (Boolean.parseBoolean(getArmorHudOption("enabled_armor"))) y = renderArmorHud(context, inventory, x, y, instance);
+            if (Boolean.parseBoolean(getArmorHudOption("enabled_arrows"))) renderArrows(inventory, context, instance, x, y);
 		});
 	}
+
+    public enum ArmorHudPositions{
+        TOP_RIGHT(20, ArrowDirection.DOWN, (armorSlot, windowWidth) -> new Vec2i(windowWidth -20, 80), (armorSlot, windowWidth) -> switch (armorSlot){
+            case HEAD -> new Vec2i(windowWidth -20, 20);
+            case BODY -> new Vec2i(windowWidth -20, 40);
+            case FEET -> new Vec2i(windowWidth -20, 60);
+            case LEGS -> new Vec2i(windowWidth -20, 80);
+            default -> null;
+        }),
+        TOP_LEFT(20, ArrowDirection.DOWN, (armorSlot, windowWidth) -> new Vec2i(20, 80), (armorSlot, windowWidth) -> switch (armorSlot){
+            case HEAD -> new Vec2i(20, 20);
+            case BODY -> new Vec2i(20, 40);
+            case FEET -> new Vec2i(20, 60);
+            case LEGS -> new Vec2i(20, 80);
+            default -> null;
+        }),
+        BOTTOM_RIGHT(20, ArrowDirection.DOWN, (armorSlot, windowWidth) -> new Vec2i(windowWidth -20, windowWidth -80), (armorSlot, windowWidth) -> switch (armorSlot){
+            case HEAD -> new Vec2i(windowWidth -20, windowWidth -20);
+            case BODY -> new Vec2i(windowWidth -20, windowWidth -40);
+            case FEET -> new Vec2i(windowWidth -20, windowWidth -60);
+            case LEGS -> new Vec2i(windowWidth -20, windowWidth -80);
+            default -> null;
+        }),
+        BOTTOM_LEFT(20, ArrowDirection.DOWN, (armorSlot, windowWidth) -> new Vec2i(20, windowWidth -80), (armorSlot, windowWidth) -> switch (armorSlot){
+            case HEAD -> new Vec2i(20, windowWidth -20);
+            case BODY -> new Vec2i(20, windowWidth -40);
+            case FEET -> new Vec2i(20, windowWidth -60);
+            case LEGS -> new Vec2i(20, windowWidth -80);
+            default -> null;
+        }),
+        HOTBAR(20, ArrowDirection.DOWN, (armorSlot, windowWidth) -> new Vec2i(20, windowWidth -80), (armorSlot, windowWidth) -> switch (armorSlot){
+            case HEAD -> new Vec2i(20, windowWidth -20);
+            case BODY -> new Vec2i(20, windowWidth -40);
+            case FEET -> new Vec2i(20, windowWidth -60);
+            case LEGS -> new Vec2i(20, windowWidth -80);
+            default -> null;
+        });
+
+        public final UiPos armorPos;
+        public final UiPos arrowStart;
+        public final ArrowDirection arrowDirection;
+        public final int arrowStep;
+
+        ArmorHudPositions(int arrowStep, ArrowDirection arrowDirection, UiPos arrowStart, UiPos armorPos) {
+            this.arrowStep = arrowStep;
+            this.arrowDirection = arrowDirection;
+            this.arrowStart = arrowStart;
+            this.armorPos = armorPos;
+        }
+
+
+        public record Vec2i(int x, int y){}
+        public enum ArrowDirection{UP, DOWN, LEFT, RIGHT;}
+        @FunctionalInterface public interface UiPos {
+            Vec2i get(EquipmentSlot armorSlot, int windowWidth);
+        }
+    }
+
+    public static JSONObject getArmorHudOptions(){
+        return ConfigManager.read(ConfigManager.file(), ARMOR_HUD_ID);
+    }
+
+    public static String getArmorHudOption(String key){
+        JSONObject parent = getArmorHudOptions();
+        if (parent == null || !parent.containsKey(key)) return "";
+        if (parent.get(key) instanceof String string) return string;
+        return "";
+    }
+
+    public static void writeArmorHudOption(String key, String value){
+        JSONObject options = getArmorHudOptions();
+        options.put(key, value);
+        ConfigManager.write(ARMOR_HUD_ID, options);
+    }
 
 	private static int renderArmorHud(DrawContext context, PlayerInventory inventory, int x, int y, MinecraftClient instance) {
 		List<EquipmentSlot> armorSlots = List.of(EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET);
@@ -126,13 +207,13 @@ public class ClientGui {
 
 	private static String arrowKey(ItemStack stack) {
 		Item item = stack.getItem();
-		if (!(item instanceof net.minecraft.item.TippedArrowItem)) return Objects.requireNonNull(Registries.ITEM.getId(item)).toString();
+		if (!(item instanceof TippedArrowItem)) return Objects.requireNonNull(Registries.ITEM.getId(item)).toString();
 
 		StringBuilder key = new StringBuilder(Objects.requireNonNull(Registries.ITEM.getId(item)).toString());
 		PotionContentsComponent potionContentsComponent = stack.get(DataComponentTypes.POTION_CONTENTS);
 		if (potionContentsComponent != null) {
 			potionContentsComponent.potion().ifPresent(potionRegistryEntry -> key.append("|").append(Registries.POTION.getId(potionRegistryEntry.value())));
-			for (net.minecraft.entity.effect.StatusEffectInstance effect : potionContentsComponent.customEffects()) {
+			for (StatusEffectInstance effect : potionContentsComponent.customEffects()) {
 				key.append("|").append(Registries.STATUS_EFFECT.getId(effect.getEffectType().value()))
 					.append(":").append(effect.getAmplifier());
 			}

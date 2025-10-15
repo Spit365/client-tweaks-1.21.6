@@ -6,6 +6,7 @@ import net.minecraft.text.Text;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONStyle;
 import net.spit365.clienttweaks.ClientTweaks;
+import net.spit365.clienttweaks.custom.gui.ArmorHud;
 import net.spit365.clienttweaks.manager.CosmeticManager;
 import net.spit365.clienttweaks.manager.MethodManager;
 
@@ -95,6 +96,19 @@ public class ClientCommands {
                                     )
                                 )
                             )
+                        )
+                    )
+                )
+                .then(literal(ArmorHud.ARMOR_HUD_ID)
+                    .then(argument("key", StringArgumentType.string())
+                        .then(argument("value", StringArgumentType.string())
+                            .executes(context -> {
+                                ArmorHud.writeArmorHudOption(
+                                    StringArgumentType.getString(context, "key"),
+                                    StringArgumentType.getString(context, "value")
+                                );
+                                return r;
+                            })
                         )
                     )
                 )
