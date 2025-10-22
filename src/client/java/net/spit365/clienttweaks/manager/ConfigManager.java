@@ -31,10 +31,13 @@ public class ConfigManager {
         return new JSONObject();
     }
     public static void write(String category, JSONObject categoryContent) {
-        JSONObject file = file();
-        file.put(category, categoryContent);
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(PATH))) {
-            writer.write(file.toJSONString(JSONStyle.NO_COMPRESS));
+        JSONObject fileJson = file();
+        fileJson.put(category, categoryContent);
+        File file = new File(PATH);
+        File parent = file.getParentFile();
+        if (parent != null && !parent.exists()) parent.mkdirs();
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            writer.write(fileJson.toJSONString());
         }
         catch (Exception e) {
             ClientTweaks.LOGGER.error("Failed to write to the config file: {}", e.getMessage());}
