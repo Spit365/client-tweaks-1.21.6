@@ -6,13 +6,14 @@ import net.minecraft.text.Text;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONStyle;
 import net.spit365.clienttweaks.ClientTweaks;
+import net.spit365.clienttweaks.config.ArmorHudConfig;
 import net.spit365.clienttweaks.custom.gui.ArmorHud;
-import net.spit365.clienttweaks.manager.CosmeticManager;
+import net.spit365.clienttweaks.config.CosmeticsConfig;
 import net.spit365.clienttweaks.manager.MethodManager;
 
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
-import static net.spit365.clienttweaks.manager.ConfigManager.*;
+import static net.spit365.clienttweaks.custom.gui.ConfigManager.*;
 
 public class ClientCommands {
     private static final int r = 1;
@@ -27,10 +28,10 @@ public class ClientCommands {
                                 .executes(context -> {
                                     String cosmeticKey = StringArgumentType.getString(context, "cosmetic");
                                     String target = StringArgumentType.getString(context, "target");
-                                    JSONObject cosmetic = CosmeticManager.getEnabledCosmetic(cosmeticKey);
+                                    JSONObject cosmetic = CosmeticsConfig.getEnabledCosmetic(cosmeticKey);
     
                                     cosmetic.put(target, new JSONObject());
-                                    CosmeticManager.writeCosmetic(cosmeticKey, cosmetic);
+                                    CosmeticsConfig.writeCosmetic(cosmeticKey, cosmetic);
     
                                     context.getSource().sendFeedback(Text.literal("Added " + target + " to the config. You will see the changes shortly"));
                                     return r;
@@ -44,10 +45,10 @@ public class ClientCommands {
                                 .executes(context -> {
                                     String cosmeticKey = StringArgumentType.getString(context, "cosmetic");
                                     String target = StringArgumentType.getString(context, "target");
-                                    JSONObject cosmetic = CosmeticManager.getEnabledCosmetic(cosmeticKey);
+                                    JSONObject cosmetic = CosmeticsConfig.getEnabledCosmetic(cosmeticKey);
 
                                     cosmetic.remove(target);
-                                    CosmeticManager.writeCosmetic(cosmeticKey, cosmetic);
+                                    CosmeticsConfig.writeCosmetic(cosmeticKey, cosmetic);
     
                                     context.getSource().sendFeedback(Text.literal("Removed " + target + " from the config. You will see the changes shortly"));
                                     return r;
@@ -57,7 +58,7 @@ public class ClientCommands {
                     )
                     .then(literal("list")
                         .executes(context -> {
-                            JSONObject cosmetics = CosmeticManager.getEnabledCosmetics();
+                            JSONObject cosmetics = CosmeticsConfig.getEnabledCosmetics();
                             for (String cosmetic : cosmetics.keySet()) {
                                 StringBuilder sb = new StringBuilder(cosmetic + ": ");
                                 for (String target : ((JSONObject) cosmetics.get(cosmetic)).keySet())
@@ -68,7 +69,7 @@ public class ClientCommands {
                         })
                         .then(literal("json")
                             .executes(context -> {
-                                context.getSource().sendFeedback(Text.literal(CosmeticManager.getEnabledCosmetics().toJSONString(JSONStyle.NO_COMPRESS)));
+                                context.getSource().sendFeedback(Text.literal(CosmeticsConfig.getEnabledCosmetics().toJSONString(JSONStyle.NO_COMPRESS)));
                                 return r;
                             })
                         )
@@ -84,11 +85,11 @@ public class ClientCommands {
                                             String key = StringArgumentType.getString(context, "key");
                                             String value = StringArgumentType.getString(context, "value");
     
-                                            JSONObject cosmetic = CosmeticManager.getEnabledCosmetic(cosmeticKey);
+                                            JSONObject cosmetic = CosmeticsConfig.getEnabledCosmetic(cosmeticKey);
                                             JSONObject target = read(cosmetic, targetKey);
                                             target.put(key, value);
                                             cosmetic.put(targetKey, target);
-                                            CosmeticManager.writeCosmetic(cosmeticKey, cosmetic);
+                                            CosmeticsConfig.writeCosmetic(cosmeticKey, cosmetic);
     
                                             context.getSource().sendFeedback(Text.literal("Set " + key + " to " + value));
                                             return r;
@@ -103,10 +104,10 @@ public class ClientCommands {
                     .then(argument("key", StringArgumentType.string())
                         .then(argument("value", StringArgumentType.string())
                             .executes(context -> {
-                                ArmorHud.writeArmorHudOption(
+                                ArmorHudConfig.writeArmorHudOption(
                                     StringArgumentType.getString(context, "key"),
                                     StringArgumentType.getString(context, "value")
-                                );
+																  );
                                 return r;
                             })
                         )

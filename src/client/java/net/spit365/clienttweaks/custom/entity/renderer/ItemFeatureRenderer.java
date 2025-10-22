@@ -17,7 +17,8 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.Random;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
-import net.spit365.clienttweaks.manager.CosmeticManager;
+import net.spit365.clienttweaks.ClientTweaks;
+import net.spit365.clienttweaks.config.CosmeticsConfig;
 import org.joml.Quaternionf;
 
 import java.util.Arrays;
@@ -35,9 +36,11 @@ public class ItemFeatureRenderer extends FeatureRenderer<PlayerEntityRenderState
 
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, PlayerEntityRenderState state, float limbAngle, float limbDistance) {
-        Arrays.stream(CosmeticManager.loadedCustomCosmetics).filter(jsonObject -> CosmeticManager.getEnabledCosmetics().containsKey((String) jsonObject.get("name"))).forEach(jsonObject -> {
-            if (jsonObject.get("matrix_operations") instanceof JSONArray matrixOperations)
+        Arrays.stream(CosmeticsConfig.loadedCustomCosmetics).filter(jsonObject -> CosmeticsConfig.getEnabledCosmetics().containsKey((String) jsonObject.get("name"))).forEach(cosmetic -> {
+			ClientTweaks.LOGGER.info("rendering cosmetic: name = {}, id = {}", cosmetic.get("name"), cosmetic.get("id"));
+			if (cosmetic.get("matrix_operations") instanceof JSONArray matrixOperations)
                 matrixOperations.stream().map(JSONObject.class::cast).forEach(matrixOperation -> {
+					ClientTweaks.LOGGER.info("applying matrix operation: {}", matrixOperation);
                     switch ((String) matrixOperation.get("type")){
                         case "push" -> matrices.push();
                         case "pop" -> matrices.pop();
@@ -57,11 +60,12 @@ public class ItemFeatureRenderer extends FeatureRenderer<PlayerEntityRenderState
                             (float) matrixOperation.get("z"),
                             (float) matrixOperation.get("w")
                         ));
-                        default -> {}
+                        default -> throw new RuntimeException("Unsupported matrix operation in one of the loaded, equipped cosmetics");
                     }
                 });
+			ClientTweaks.LOGGER.info("matrices ready: {}", matrices.peek());
             itemRenderer.renderItem(
-                new ItemStack(Registries.ITEM.get(Identifier.of((String) jsonObject.get("id")))),
+                new ItemStack(Registries.ITEM.get(Identifier.of((String) cosmetic.get("id")))),
                 ItemDisplayContext.FIRST_PERSON_LEFT_HAND,
                 light,
                 OverlayTexture.DEFAULT_UV,

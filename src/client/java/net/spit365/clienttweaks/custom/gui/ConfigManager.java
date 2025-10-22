@@ -1,7 +1,6 @@
-package net.spit365.clienttweaks.manager;
+package net.spit365.clienttweaks.custom.gui;
 
 import net.minidev.json.JSONObject;
-import net.minidev.json.JSONStyle;
 import net.minidev.json.JSONValue;
 import net.spit365.clienttweaks.ClientTweaks;
 

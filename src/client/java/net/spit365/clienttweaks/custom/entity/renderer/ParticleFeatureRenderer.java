@@ -13,9 +13,9 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.Random;
-import net.spit365.clienttweaks.manager.ConfigManager;
+import net.spit365.clienttweaks.custom.gui.ConfigManager;
 import net.minidev.json.JSONObject;
-import net.spit365.clienttweaks.manager.CosmeticManager;
+import net.spit365.clienttweaks.config.CosmeticsConfig;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -38,7 +38,7 @@ public class ParticleFeatureRenderer extends FeatureRenderer<PlayerEntityRenderS
      public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, PlayerEntityRenderState state, float limbAngle, float limbDistance) {
           ClientWorld clientWorld = MinecraftClient.getInstance().world;
           ClientPlayerEntity player = MinecraftClient.getInstance().player;
-          JSONObject category = CosmeticManager.getEnabledCosmetic("particles");
+          JSONObject category = CosmeticsConfig.getEnabledCosmetic("particles");
           if (
                category.containsKey(state.name) &&
                !state.invisible &&
