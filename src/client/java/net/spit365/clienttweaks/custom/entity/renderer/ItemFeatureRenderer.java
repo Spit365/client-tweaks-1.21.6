@@ -14,12 +14,14 @@ import net.minecraft.item.ItemDisplayContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.random.Random;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.spit365.clienttweaks.ClientTweaks;
 import net.spit365.clienttweaks.config.CosmeticsConfig;
 import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 import java.util.Arrays;
 
@@ -60,7 +62,13 @@ public class ItemFeatureRenderer extends FeatureRenderer<PlayerEntityRenderState
                             (float) matrixOperation.get("z"),
                             (float) matrixOperation.get("w")
                         ));
-                        default -> throw new RuntimeException("Unsupported matrix operation in one of the loaded, equipped cosmetics");
+                        case "rotate" -> matrices.multiply(new Quaternionf().rotationAxis(
+                            (float) matrixOperation.get("degrees"),
+                            (float) matrixOperation.get("x"),
+                            (float) matrixOperation.get("y"),
+                            (float) matrixOperation.get("z")
+                        ));
+                        default -> throw new RuntimeException("Unsupported matrix operation in one of the loaded, equipped, rendered cosmetics");
                     }
                 });
 			ClientTweaks.LOGGER.info("matrices ready: {}", matrices.peek());
