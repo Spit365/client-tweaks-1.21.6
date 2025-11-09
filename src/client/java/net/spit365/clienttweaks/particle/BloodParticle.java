@@ -1,4 +1,4 @@
-package net.spit365.clienttweaks.custom.particle;
+package net.spit365.clienttweaks.particle;
 
 import net.minecraft.client.particle.ParticleFactory;
 import net.minecraft.client.particle.ParticleTextureSheet;

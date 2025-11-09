@@ -7,7 +7,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import net.spit365.clienttweaks.ClientTweaks;
-import net.spit365.clienttweaks.custom.particle.BloodParticle;
+import net.spit365.clienttweaks.particle.BloodParticle;
 
 public class ModParticles {
      private static SimpleParticleType register(String name, Boolean alwaysShow, ParticleFactoryRegistry.PendingParticleFactory<SimpleParticleType> render){

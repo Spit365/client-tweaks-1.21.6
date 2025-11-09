@@ -3,8 +3,8 @@ package net.spit365.clienttweaks.config;
 import net.minecraft.client.gui.navigation.NavigationDirection;
 import net.minecraft.entity.EquipmentSlot;
 import net.minidev.json.JSONObject;
-import net.spit365.clienttweaks.custom.gui.ArmorHud;
-import net.spit365.clienttweaks.custom.gui.ConfigManager;
+import net.spit365.clienttweaks.gui.ArmorHud;
+import net.spit365.clienttweaks.gui.ConfigManager;
 import org.jetbrains.annotations.Nullable;
 
 public class ArmorHudConfig {

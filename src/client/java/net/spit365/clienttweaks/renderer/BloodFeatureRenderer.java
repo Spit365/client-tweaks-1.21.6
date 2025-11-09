@@ -1,4 +1,4 @@
-package net.spit365.clienttweaks.custom.entity.renderer;
+package net.spit365.clienttweaks.renderer;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
@@ -12,9 +12,8 @@ import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
-import net.spit365.clienttweaks.custom.entity.model.BloodCoveredModel;
-import net.minecraft.util.math.RotationAxis;
-import net.spit365.clienttweaks.custom.particle.BloodParticle;
+import net.spit365.clienttweaks.model.BloodCoveredModel;
+import net.spit365.clienttweaks.particle.BloodParticle;
 import net.spit365.clienttweaks.mod.ClientMethods;
 
 public class BloodFeatureRenderer extends FeatureRenderer<PlayerEntityRenderState, PlayerEntityModel> {

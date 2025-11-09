@@ -1,4 +1,4 @@
-package net.spit365.clienttweaks.mixin.client;
+package net.spit365.clienttweaks.mixin;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;

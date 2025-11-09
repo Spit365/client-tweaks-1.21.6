@@ -1,4 +1,4 @@
-package net.spit365.clienttweaks.custom.entity.model;
+package net.spit365.clienttweaks.model;
 
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.entity.model.EntityModel;

@@ -21,7 +21,7 @@
 	},
 	"mixins": [
 		{
-			"config": "client-tweaks.client.mixins.json",
+			"config": "client-tweaks.mixins.json",
 			"environment": "client"
 		}
 	],

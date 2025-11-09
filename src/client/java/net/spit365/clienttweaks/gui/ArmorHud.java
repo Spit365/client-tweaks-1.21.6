@@ -1,4 +1,4 @@
-package net.spit365.clienttweaks.custom.gui;
+package net.spit365.clienttweaks.gui;
 
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.minecraft.client.MinecraftClient;

@@ -1,4 +1,4 @@
-package net.spit365.clienttweaks.custom.entity.renderer;
+package net.spit365.clienttweaks.renderer;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
@@ -14,14 +14,12 @@ import net.minecraft.item.ItemDisplayContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.random.Random;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.spit365.clienttweaks.ClientTweaks;
 import net.spit365.clienttweaks.config.CosmeticsConfig;
 import org.joml.Quaternionf;
-import org.joml.Vector3f;
 
 import java.util.Arrays;
 

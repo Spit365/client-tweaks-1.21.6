@@ -1,4 +1,4 @@
-package net.spit365.clienttweaks.custom.entity.renderer;
+package net.spit365.clienttweaks.renderer;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -16,8 +16,8 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.Identifier;
 import net.minidev.json.JSONObject;
 import net.spit365.clienttweaks.ClientTweaks;
-import net.spit365.clienttweaks.custom.entity.model.TailModel;
-import net.spit365.clienttweaks.custom.gui.ConfigManager;
+import net.spit365.clienttweaks.model.TailModel;
+import net.spit365.clienttweaks.gui.ConfigManager;
 import net.spit365.clienttweaks.config.CosmeticsConfig;
 import net.spit365.clienttweaks.mod.ClientMethods;
 
