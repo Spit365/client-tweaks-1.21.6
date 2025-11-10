@@ -17,7 +17,7 @@ import net.minecraft.util.Identifier;
 import net.minidev.json.JSONObject;
 import net.spit365.clienttweaks.ClientTweaks;
 import net.spit365.clienttweaks.model.TailModel;
-import net.spit365.clienttweaks.gui.ConfigManager;
+import net.spit365.clienttweaks.util.ConfigManager;
 import net.spit365.clienttweaks.config.CosmeticsConfig;
 import net.spit365.clienttweaks.mod.ClientMethods;
 

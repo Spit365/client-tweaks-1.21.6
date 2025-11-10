@@ -8,7 +8,7 @@ import net.minecraft.util.Identifier;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
 import net.spit365.clienttweaks.ClientTweaks;
-import net.spit365.clienttweaks.gui.ConfigManager;
+import net.spit365.clienttweaks.util.ConfigManager;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

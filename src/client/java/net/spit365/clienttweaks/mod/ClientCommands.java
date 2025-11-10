@@ -12,7 +12,7 @@ import net.spit365.clienttweaks.config.CosmeticsConfig;
 
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
-import static net.spit365.clienttweaks.gui.ConfigManager.*;
+import static net.spit365.clienttweaks.util.ConfigManager.*;
 
 public class ClientCommands {
     private static final int r = 1;

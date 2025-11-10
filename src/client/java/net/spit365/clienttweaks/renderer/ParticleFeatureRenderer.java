@@ -13,7 +13,7 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.Random;
-import net.spit365.clienttweaks.gui.ConfigManager;
+import net.spit365.clienttweaks.util.ConfigManager;
 import net.minidev.json.JSONObject;
 import net.spit365.clienttweaks.config.CosmeticsConfig;
 

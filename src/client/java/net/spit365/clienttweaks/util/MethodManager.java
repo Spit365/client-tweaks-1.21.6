@@ -1,4 +1,4 @@
-package net.spit365.clienttweaks.manager;
+package net.spit365.clienttweaks.util;
 
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
