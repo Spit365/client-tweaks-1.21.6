@@ -6,7 +6,6 @@ import net.spit365.clienttweaks.config.CosmeticsConfig;
 import net.spit365.clienttweaks.mod.ClientCommands;
 import net.spit365.clienttweaks.gui.ArmorHud;
 import net.spit365.clienttweaks.mod.ClientTick;
-import net.spit365.clienttweaks.mod.ModPackets;
 import net.spit365.clienttweaks.mod.ModParticles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +21,6 @@ public class ClientTweaks implements ClientModInitializer {
 		ArmorHud.init();
 		ClientTick.init();
 		ModParticles.init();
-        ModPackets.init();
         CosmeticsConfig.init();
 	}
 }
