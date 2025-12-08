@@ -10,8 +10,7 @@ import net.minidev.json.JSONValue;
 import net.spit365.clienttweaks.ClientTweaks;
 import net.spit365.clienttweaks.util.ConfigManager;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -23,22 +22,21 @@ public class CosmeticsConfig {
     public static JSONObject[] loadedCustomCosmetics;
 
     public static JSONObject[] getCustomCosmetics(){
-        try (Stream<Path> paths = Files.walk(Paths.get(ASSETS_FOLDER), 1)) {
-            return paths.filter(Files::isRegularFile).map(path -> {
-                try (BufferedReader reader = new BufferedReader(new FileReader(path.toFile()))) {
-                    StringBuilder stringBuilder = new StringBuilder();
-                    String line;
-                    while ((line = reader.readLine()) != null) stringBuilder.append(line);
-                    if (!stringBuilder.toString().isEmpty())
-                        return (JSONObject) JSONValue.parseWithException(stringBuilder.toString());
-                } catch (Exception e){
-					ClientTweaks.LOGGER.error("Couldn't load custom cosmetics: {}", e.getMessage());
-				}
-                return null;
-            })
-            .filter(Objects::nonNull)
-            .toArray(JSONObject[]::new);
-        } catch (Exception ignored) {}
+        try (Stream<Path> paths = Files.list(Paths.get(ASSETS_FOLDER))) {
+            return paths.filter(path -> Files.isRegularFile(path) && path.getFileName().toString().endsWith(".json"))
+				.<JSONObject>mapMulti((path, result) -> {
+					try {
+						String fileName = path.getFileName().toString();
+						JSONObject customCosmetic = new JSONObject();
+						customCosmetic.put(fileName.substring(0, fileName.lastIndexOf('.')), Objects.requireNonNull(JSONValue.parseWithException(Files.readString(path, StandardCharsets.UTF_8))));
+						result.accept(customCosmetic);
+					} catch (Exception e){
+						ClientTweaks.LOGGER.error("Couldn't load custom cosmetics: {}", e.getMessage());
+					}
+            	}).toArray(JSONObject[]::new);
+        } catch (Exception e) {
+			ClientTweaks.LOGGER.error("Couldn't parse custom cosmetics folder: {}", e.getMessage());
+		}
         return new JSONObject[0];
     }
 
