@@ -37,10 +37,8 @@ public class ItemFeatureRenderer extends FeatureRenderer<PlayerEntityRenderState
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, PlayerEntityRenderState state, float limbAngle, float limbDistance) {
         Arrays.stream(CosmeticsConfig.loadedCustomCosmetics).filter(jsonObject -> CosmeticsConfig.getEnabledCosmetics().containsKey((String) jsonObject.get("name"))).forEach(cosmetic -> {
-			ClientTweaks.LOGGER.info("rendering cosmetic: name = {}, id = {}", cosmetic.get("name"), cosmetic.get("id"));
 			if (cosmetic.get("matrix_operations") instanceof JSONArray matrixOperations)
                 matrixOperations.stream().map(JSONObject.class::cast).forEach(matrixOperation -> {
-					ClientTweaks.LOGGER.info("applying matrix operation: {}", matrixOperation);
                     switch ((String) matrixOperation.get("type")){
                         case "push" -> matrices.push();
                         case "pop" -> matrices.pop();
@@ -69,7 +67,6 @@ public class ItemFeatureRenderer extends FeatureRenderer<PlayerEntityRenderState
                         default -> throw new RuntimeException("Unsupported matrix operation in one of the loaded, equipped, rendered cosmetics");
                     }
                 });
-			ClientTweaks.LOGGER.info("matrices ready: {}", matrices.peek());
             itemRenderer.renderItem(
                 new ItemStack(Registries.ITEM.get(Identifier.of((String) cosmetic.get("id")))),
                 ItemDisplayContext.FIRST_PERSON_LEFT_HAND,

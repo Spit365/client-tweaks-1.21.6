@@ -69,7 +69,6 @@ public class CosmeticsConfig {
     }
 
 	private static void loadCosmetics() {
-		ClientTweaks.LOGGER.error("loading cosmetics");
 		loadedCustomCosmetics = getCustomCosmetics();
 	}
 }
