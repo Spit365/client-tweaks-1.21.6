@@ -14,7 +14,7 @@ import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.spit365.clienttweaks.model.BloodCoveredModel;
 import net.spit365.clienttweaks.particle.BloodParticle;
-import net.spit365.clienttweaks.mod.ClientMethods;
+import net.spit365.clienttweaks.util.ModUtil;
 
 public class BloodFeatureRenderer extends FeatureRenderer<PlayerEntityRenderState, PlayerEntityModel> {
 	public BloodFeatureRenderer(FeatureRendererContext<PlayerEntityRenderState, PlayerEntityModel> context) {super(context);}
@@ -29,12 +29,12 @@ public class BloodFeatureRenderer extends FeatureRenderer<PlayerEntityRenderStat
 			ModelPart bloodModel = BloodCoveredModel.getTexturedModelData().createModel();
 
 			matrices.push();
-			ClientMethods.applyPartTransform(matrices, playerModel.rightLeg);
+			ModUtil.applyPartTransform(matrices, playerModel.rightLeg);
 			bloodModel.getChild("right").render(matrices, buffer, light, overlay);
 			matrices.pop();
 
 			matrices.push();
-			ClientMethods.applyPartTransform(matrices, playerModel.leftLeg);
+			ModUtil.applyPartTransform(matrices, playerModel.leftLeg);
 			bloodModel.getChild("left").render(matrices, buffer, light, overlay);
 			matrices.pop();
 		}

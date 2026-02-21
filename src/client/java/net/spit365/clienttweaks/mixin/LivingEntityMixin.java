@@ -3,7 +3,7 @@ package net.spit365.clienttweaks.mixin;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
-import net.spit365.clienttweaks.mod.ClientMethods;
+import net.spit365.clienttweaks.util.ModUtil;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -16,7 +16,7 @@ public class LivingEntityMixin {
 		if (((LivingEntity) (Object) this) instanceof PlayerEntity player) {
 			World world = player.getWorld();
 			if (world != null) {
-                ClientMethods.summonBleed(player.getPos(), world);
+                ModUtil.summonBleed(player.getPos(), world);
                 ci.cancel();
 			}
 		}

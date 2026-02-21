@@ -19,7 +19,7 @@ import net.spit365.clienttweaks.ClientTweaks;
 import net.spit365.clienttweaks.model.TailModel;
 import net.spit365.clienttweaks.util.ConfigManager;
 import net.spit365.clienttweaks.config.CosmeticsConfig;
-import net.spit365.clienttweaks.mod.ClientMethods;
+import net.spit365.clienttweaks.util.ModUtil;
 
 import java.util.stream.StreamSupport;
 
@@ -33,7 +33,7 @@ public class TailFeatureRenderer extends FeatureRenderer<PlayerEntityRenderState
 		if (isDev(state.name) || (category.containsKey(state.name)) && !state.invisible) {
 			matrices.push();
 			if (state.isInSneakingPose) matrices.translate(0f,  0.2f, 0.1f);
-			ClientMethods.applyPartTransform(matrices, getContextModel().body);
+			ModUtil.applyPartTransform(matrices, getContextModel().body);
 			TailModel.getModel(state.isInSneakingPose).render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntitySolid(Identifier.of(stringOption((JSONObject) category.get(state.name), "texture")))), light, LivingEntityRenderer.getOverlay(state, 0f));
 			matrices.pop();
 		}

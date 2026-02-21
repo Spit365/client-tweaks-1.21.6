@@ -1,4 +1,4 @@
-package net.spit365.clienttweaks.mod;
+package net.spit365.clienttweaks.util;
 
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.util.math.MatrixStack;
@@ -6,8 +6,14 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.spit365.clienttweaks.mod.ModParticles;
 
-public class ClientMethods {
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
+public class ModUtil {
      public static void applyPartTransform(MatrixStack matrices, ModelPart part) {
           matrices.translate(part.originX / 16f, part.originY / 16f, part.originZ / 16f);
           if (part.roll != 0f) matrices.multiply(RotationAxis.POSITIVE_Z.rotation(part.roll));

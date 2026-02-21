@@ -12,7 +12,7 @@ import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.spit365.clienttweaks.model.EarsModel;
 import net.spit365.clienttweaks.config.CosmeticsConfig;
-import net.spit365.clienttweaks.mod.ClientMethods;
+import net.spit365.clienttweaks.util.ModUtil;
 
 @Environment(EnvType.CLIENT)
 public class EarsFeatureRenderer extends FeatureRenderer<PlayerEntityRenderState, PlayerEntityModel> {
@@ -22,7 +22,7 @@ public class EarsFeatureRenderer extends FeatureRenderer<PlayerEntityRenderState
 	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, PlayerEntityRenderState state, float limbAngle, float limbDistance) {
 		if (CosmeticsConfig.getEnabledCosmetic("ears").containsKey(state.name) && !state.invisible) {
           	matrices.push();
-			ClientMethods.applyPartTransform(matrices, getContextModel().head);
+			ModUtil.applyPartTransform(matrices, getContextModel().head);
 			if (state.isInSneakingPose) matrices.translate(0f, 0.25f, 0f);
 			EarsModel.getTexturedModelData().createModel().render(matrices, vertexConsumers.getBuffer(RenderLayer.getArmorCutoutNoCull(EarsModel.TEXTURE)), light, LivingEntityRenderer.getOverlay(state, 0f));
 			matrices.pop();
