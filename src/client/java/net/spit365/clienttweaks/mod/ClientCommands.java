@@ -99,7 +99,7 @@ public class ClientCommands {
                         )
                     )
                 )
-                .then(literal(ArmorHud.ARMOR_HUD_ID)
+                .then(literal(ArmorHudConfig.ARMOR_HUD_ID)
                     .then(argument("key", StringArgumentType.string())
                         .then(argument("value", StringArgumentType.string())
                             .executes(context -> {

@@ -29,11 +29,10 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 public class ArmorHud {
-	public static final String ARMOR_HUD_ID = "armor_hud";
-	public static final List<EquipmentSlot> ARMOR_SLOTS = List.of(EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET);
+    public static final List<EquipmentSlot> ARMOR_SLOTS = List.of(EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET);
 
 	public static void init() {
-		HudElementRegistry.addFirst(Identifier.of(ClientTweaks.MOD_ID, ARMOR_HUD_ID), (context, tickCounter) -> {
+		HudElementRegistry.addFirst(Identifier.of(ClientTweaks.MOD_ID, ArmorHudConfig.ARMOR_HUD_ID), (context, tickCounter) -> {
 			MinecraftClient client = MinecraftClient.getInstance();
 			ClientPlayerEntity player = client.player;
 			if (player == null) return;

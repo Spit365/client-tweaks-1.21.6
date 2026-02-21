@@ -11,8 +11,10 @@ import java.util.*;
 import java.util.function.BiConsumer;
 
 public class ArmorHudConfig {
-	public static JSONObject getArmorHudOptions() {
-		return ConfigManager.read(ConfigManager.file(), ArmorHud.ARMOR_HUD_ID);
+    public static final String ARMOR_HUD_ID = "armor_hud";
+
+    public static JSONObject getArmorHudOptions() {
+		return ConfigManager.read(ConfigManager.file(), ARMOR_HUD_ID);
 	}
 
 	public static boolean isEnabled(String key) {
@@ -38,7 +40,7 @@ public class ArmorHudConfig {
 	public static void writeArmorHudOption(String key, String value) {
 		JSONObject options = getArmorHudOptions();
 		options.put(key, value);
-		ConfigManager.write(ArmorHud.ARMOR_HUD_ID, options);
+		ConfigManager.write(ARMOR_HUD_ID, options);
 	}
 
     public enum ArmorHudRenderer {
