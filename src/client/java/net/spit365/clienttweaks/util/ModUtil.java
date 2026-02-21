@@ -27,4 +27,8 @@ public class ModUtil {
             for (int i = 0; i < world.random.nextInt(4) + 6; i++)
                 world.addParticleClient(ModParticles.BLOOD, entity.getX(), entity.getY() + 1, entity.getZ(), 1, 0, 1);
     }
+
+    public static <T> HashSet<T> makeMutable(Set<T> list) {
+        return list == null ? new HashSet<>() : new HashSet<>(list);
+    }
 }
