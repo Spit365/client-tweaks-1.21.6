@@ -49,7 +49,7 @@ public class CosmeticsConfig {
     }
     
     public static void writeCosmetics(JSONObject cosmetics){
-        ConfigManager.write("cosmetic", cosmetics);
+        ConfigManager.write("cosmetics", cosmetics);
     }
     public static void writeCosmetic(String id, JSONObject cosmetic){
         JSONObject cosmetics = CosmeticsConfig.getEnabledCosmetics();
