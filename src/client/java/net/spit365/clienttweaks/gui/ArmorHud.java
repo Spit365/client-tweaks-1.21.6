@@ -29,6 +29,13 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 public class ArmorHud {
+    public static class Layout {
+        public static final int Y_SIZE = 80;
+
+        public static int getXSize(int textLength) {
+            return textLength * 5 + 40;
+        }
+    }
     public static final List<EquipmentSlot> ARMOR_SLOTS = List.of(EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET);
 
 	public static void init() {
@@ -37,34 +44,40 @@ public class ArmorHud {
 			ClientPlayerEntity player = client.player;
 			if (player == null) return;
 			PlayerInventory inventory = player.getInventory();
+            ArmorHudConfig.ArmorHudRenderer armorHudRenderer = ArmorHudConfig.getArmorHudRenderer();
 
-			if (ArmorHudConfig.isEnabled("armor"))
-                ArmorHudConfig.getArmorHudRenderer().armorHudRender.accept((pos, slot) -> renderArmorIcon(context, client, computeArmorData(inventory), pos, slot), new ArmorHudConfig.ArmorHudRenderer.UiPos(context.getScaledWindowWidth(), context.getScaledWindowHeight()));
-			if (ArmorHudConfig.isEnabled("arrows") && inventory.contains(s -> s.isIn(ItemTags.ARROWS))) {
-                ArmorHudConfig.getArmorHudRenderer().arrowRenderer.accept(computeArrowGroups(inventory), (pos, group) -> renderArrowIcon(context, client, group, pos), new ArmorHudConfig.ArmorHudRenderer.UiPos(context.getScaledWindowWidth(), context.getScaledWindowHeight()));
+            if (ArmorHudConfig.isEnabled("armor")) {
+                armorHudRenderer.armorHudRender.accept((pos, slot) -> {
+                    renderArmorIcon(context, client, computeArmorData(inventory), pos, slot);
+                }, new ArmorHudConfig.ArmorHudRenderer.UiPos(context.getScaledWindowWidth(), context.getScaledWindowHeight()));
             }
+			if (ArmorHudConfig.isEnabled("arrows") && inventory.contains(s -> s.isIn(ItemTags.ARROWS)))
+                armorHudRenderer.arrowRenderer.accept(computeArrowGroups(inventory), (pos, group) -> renderArrowIcon(context, client, group, pos), new ArmorHudConfig.ArmorHudRenderer.UiPos(context.getScaledWindowWidth(), context.getScaledWindowHeight()));
 		});
 	}
 
     private static void renderArmorIcon(DrawContext context, MinecraftClient client, ArmorData data, ArmorHudConfig.ArmorHudRenderer.UiPos pos, EquipmentSlot slot) {
+        ItemStack equipped = data.equipped().get(slot);
+        int textLength = 0;
+        if (!equipped.isEmpty()) {
+            String durability = String.valueOf(equipped.getMaxDamage() - equipped.getDamage());
+            textLength = durability.length();
+            context.drawText(client.textRenderer, Text.literal(durability), pos.x(), pos.y() + 5, Colors.WHITE, true);
+            context.drawItem(equipped, pos.x() + 25 + 5 * textLength, pos.y());
+            context.drawStackOverlay(client.textRenderer, equipped, pos.x() + 25 + 5 * textLength, pos.y());
+        }
         ItemStack best = data.bestUpgrade().get(slot);
         if (best != null) {
-            context.drawItem(best, pos.x() - 20, pos.y());
-            context.drawStackOverlay(client.textRenderer, best, pos.x() - 20, pos.y());
-        }
-        ItemStack equipped = data.equipped().get(slot);
-        if (!equipped.isEmpty()) {
-            context.drawItem(equipped, pos.x(), pos.y());
-            context.drawStackOverlay(client.textRenderer, equipped, pos.x(), pos.y());
-            context.drawText(client.textRenderer, Text.literal(String.valueOf(equipped.getMaxDamage() - equipped.getDamage())), pos.x() + 20, pos.y() + 5, Colors.WHITE, true);
+            context.drawItem(best, pos.x() + 5 + 5 * textLength, pos.y());
+            context.drawStackOverlay(client.textRenderer, best, pos.x() + 5 + 5 * textLength, pos.y());
         }
     }
 
     private static void renderArrowIcon(DrawContext context, MinecraftClient mc, ArrowGroup arrowGroups, ArmorHudConfig.ArmorHudRenderer.UiPos pos) {
         ItemStack icon = arrowGroups.icon();
         String text = String.valueOf(arrowGroups.count());
-        context.drawItem(icon, pos.x(), pos.y());
-        context.drawText(mc.textRenderer, text, pos.x() - (5 * text.length()) / 2, pos.y() + 15, Colors.WHITE, true);
+        context.drawText(mc.textRenderer, text, pos.x(), pos.y() + 5, Colors.WHITE, true);
+        context.drawItem(icon, pos.x() + (5 * (text.length() + 1)), pos.y());
     }
 
     public static ArmorData computeArmorData(PlayerInventory inventory) {
