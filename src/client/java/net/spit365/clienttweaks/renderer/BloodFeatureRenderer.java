@@ -1,5 +1,7 @@
 package net.spit365.clienttweaks.renderer;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -16,6 +18,7 @@ import net.spit365.clienttweaks.model.BloodCoveredModel;
 import net.spit365.clienttweaks.particle.BloodParticle;
 import net.spit365.clienttweaks.util.ModUtil;
 
+@Environment(EnvType.CLIENT)
 public class BloodFeatureRenderer extends FeatureRenderer<PlayerEntityRenderState, PlayerEntityModel> {
 	public BloodFeatureRenderer(FeatureRendererContext<PlayerEntityRenderState, PlayerEntityModel> context) {super(context);}
 

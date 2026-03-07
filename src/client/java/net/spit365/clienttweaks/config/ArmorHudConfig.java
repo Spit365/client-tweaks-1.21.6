@@ -1,5 +1,7 @@
 package net.spit365.clienttweaks.config;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.entity.EquipmentSlot;
 import net.minidev.json.JSONObject;
 import net.spit365.clienttweaks.ClientTweaks;
@@ -10,6 +12,7 @@ import org.apache.logging.log4j.util.TriConsumer;
 import java.util.*;
 import java.util.function.BiConsumer;
 
+@Environment(EnvType.CLIENT)
 public class ArmorHudConfig {
     public static final String ARMOR_HUD_ID = "armor_hud";
 

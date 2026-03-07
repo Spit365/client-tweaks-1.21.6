@@ -1,11 +1,14 @@
 package net.spit365.clienttweaks.model;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.state.EntityRenderState;
 import net.minecraft.util.Identifier;
 import net.spit365.clienttweaks.ClientTweaks;
 
+@Environment(EnvType.CLIENT)
 public class EarsModel<T extends EntityRenderState> extends EntityModel<T> {
 	public EarsModel(ModelPart root) {super(root);}
 

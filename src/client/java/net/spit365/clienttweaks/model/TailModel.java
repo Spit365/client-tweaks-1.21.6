@@ -1,9 +1,12 @@
 package net.spit365.clienttweaks.model;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.state.EntityRenderState;
 
+@Environment(EnvType.CLIENT)
 public class TailModel<T extends EntityRenderState> extends EntityModel<T> {
 	public TailModel(ModelPart root) {super(root);}
 

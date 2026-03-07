@@ -1,5 +1,7 @@
 package net.spit365.clienttweaks.renderer;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -20,7 +22,7 @@ import net.spit365.clienttweaks.config.CosmeticsConfig;
 import java.util.LinkedList;
 import java.util.List;
 
-
+@Environment(EnvType.CLIENT)
 public class ParticleFeatureRenderer extends FeatureRenderer<PlayerEntityRenderState, PlayerEntityModel> implements ConfigManager.DefaultedJsonReader {
      public ParticleFeatureRenderer(FeatureRendererContext<PlayerEntityRenderState, PlayerEntityModel> context) {
           super(context);

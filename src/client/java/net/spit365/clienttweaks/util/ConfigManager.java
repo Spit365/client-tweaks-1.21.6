@@ -1,5 +1,7 @@
 package net.spit365.clienttweaks.util;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
 import net.spit365.clienttweaks.ClientTweaks;
@@ -7,6 +9,7 @@ import net.spit365.clienttweaks.ClientTweaks;
 import java.io.*;
 import java.util.Objects;
 
+@Environment(EnvType.CLIENT)
 public class ConfigManager {
     public static final String PATH = ClientTweaks.CONFIG_FOLDER + "config.json";
 

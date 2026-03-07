@@ -1,5 +1,7 @@
 package net.spit365.clienttweaks.particle;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.particle.ParticleFactory;
 import net.minecraft.client.particle.ParticleTextureSheet;
 import net.minecraft.client.particle.SpriteBillboardParticle;
@@ -17,6 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Predicate;
 
+@Environment(EnvType.CLIENT)
 public class BloodParticle extends SpriteBillboardParticle {
      private static final LinkedList<BloodParticle> bloodParticles = new LinkedList<>();
 

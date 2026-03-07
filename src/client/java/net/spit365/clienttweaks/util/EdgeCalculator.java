@@ -2,6 +2,8 @@ package net.spit365.clienttweaks.util;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
@@ -12,6 +14,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 
+@Environment(EnvType.CLIENT)
 public final class EdgeCalculator {
     public static @NotNull Set<BoxOutlineRenderer.ColoredEdge> getColoredEdges(Set<BoxContext> newState) {
         Int2ObjectOpenHashMap<List<Box>> byColor = new Int2ObjectOpenHashMap<>();

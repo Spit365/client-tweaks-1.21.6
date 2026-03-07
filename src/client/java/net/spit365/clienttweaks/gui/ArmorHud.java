@@ -1,5 +1,7 @@
 package net.spit365.clienttweaks.gui;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -28,6 +30,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+@Environment(EnvType.CLIENT)
 public class ArmorHud {
     public static class Layout {
         public static final int Y_SIZE = 80;

@@ -1,5 +1,7 @@
 package net.spit365.clienttweaks.config;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.minecraft.resource.ResourceManager;
@@ -17,6 +19,7 @@ import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+@Environment(EnvType.CLIENT)
 public class CosmeticsConfig {
     public static final String ASSETS_FOLDER = ClientTweaks.CONFIG_FOLDER + "assets/";
     public static JSONObject[] loadedCustomCosmetics;

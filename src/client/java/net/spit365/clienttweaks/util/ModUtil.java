@@ -1,5 +1,7 @@
 package net.spit365.clienttweaks.util;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
@@ -13,6 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+@Environment(EnvType.CLIENT)
 public class ModUtil {
      public static void applyPartTransform(MatrixStack matrices, ModelPart part) {
           matrices.translate(part.originX / 16f, part.originY / 16f, part.originZ / 16f);

@@ -1,5 +1,7 @@
 package net.spit365.clienttweaks.config;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minidev.json.JSONObject;
@@ -14,6 +16,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Environment(EnvType.CLIENT)
 public class BoxOutlineConfig {
     public static final String BOX_OUTLINES_ID = "box_outlines";
 
