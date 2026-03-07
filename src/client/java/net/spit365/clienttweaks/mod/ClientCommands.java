@@ -67,79 +67,87 @@ public class ClientCommands {
                                 return r;
                             })
                         )
-                        .then(argument("pos1", BlockPosArgumentType.blockPos())
-                            .then(argument("pos2", BlockPosArgumentType.blockPos())
-                                .executes(context -> {
-                                    Set<BoxContext> permanentState = ModUtil.makeMutable(BoxOutlineConfig.getPermanentBoxOutlineState());
-                                    FabricClientCommandSource source = context.getSource();
-                                    Box box = getBox(context, source.getPosition(), source.getRotation());
-                                    if (permanentState.removeIf(boxContext -> boxContext.box().equals(box))) {
-                                        BoxOutlineConfig.setPermanentBoxOutlineState(permanentState);
-                                        source.sendFeedback(Text.literal("Removed"));
-                                    }
-                                    else source.sendFeedback(Text.literal("Couldn't find any box with those measurements"));
-                                    return r;
-                                })
+                        .then(literal("box")
+                            .then(argument("pos1", BlockPosArgumentType.blockPos())
+                                .then(argument("pos2", BlockPosArgumentType.blockPos())
+                                    .executes(context -> {
+                                        Set<BoxContext> permanentState = ModUtil.makeMutable(BoxOutlineConfig.getPermanentBoxOutlineState());
+                                        FabricClientCommandSource source = context.getSource();
+                                        Box box = getBox(context, source.getPosition(), source.getRotation());
+                                        if (permanentState.removeIf(boxContext -> boxContext.box().equals(box))) {
+                                            BoxOutlineConfig.setPermanentBoxOutlineState(permanentState);
+                                            source.sendFeedback(Text.literal("Removed"));
+                                        }
+                                        else source.sendFeedback(Text.literal("Couldn't find any box with those measurements"));
+                                        return r;
+                                    })
+                                )
                             )
                         )
-                        .then(argument("color", ColorArgumentType.color())
-                            .executes(context -> {
-                                Set<BoxContext> permanentState = ModUtil.makeMutable(BoxOutlineConfig.getPermanentBoxOutlineState());
-                                Formatting colorArgument = context.getArgument("color", Formatting.class);
-                                Integer color = colorArgument.getColorValue();
-                                FabricClientCommandSource source = context.getSource();
-                                if (color == null) {
-                                    source.sendFeedback(Text.literal("That color doesn't have a color value associated with it"));
-                                    return r;
-                                }
-                                int[] removed = {0};
-                                permanentState.removeIf(boxContext -> {
-                                    boolean result = boxContext.color() == color;
-                                    if (result) removed[0]++;
-                                    return result;
-                                });
-                                BoxOutlineConfig.setPermanentBoxOutlineState(permanentState);
-                                source.sendFeedback(Text.literal("Color " + colorArgument.getName() + " with " + removed[0] + " members has been removed"));
-                                return r;
-                            })
-                        )
-                        .then(argument("hex-value", StringArgumentType.string())
-                            .executes(context -> {
-                                Set<BoxContext> permanentState = ModUtil.makeMutable(BoxOutlineConfig.getPermanentBoxOutlineState());
-                                String color = StringArgumentType.getString(context, "hex-value");
-                                FabricClientCommandSource source = context.getSource();
-                                try {
-                                    int colorValue = Integer.parseInt(color, 16);
+                        .then(literal("color")
+                            .then(argument("color", ColorArgumentType.color())
+                                .executes(context -> {
+                                    Set<BoxContext> permanentState = ModUtil.makeMutable(BoxOutlineConfig.getPermanentBoxOutlineState());
+                                    Formatting colorArgument = context.getArgument("color", Formatting.class);
+                                    Integer color = colorArgument.getColorValue();
+                                    FabricClientCommandSource source = context.getSource();
+                                    if (color == null) {
+                                        source.sendFeedback(Text.literal("That color doesn't have a color value associated with it"));
+                                        return r;
+                                    }
                                     int[] removed = {0};
                                     permanentState.removeIf(boxContext -> {
-                                        boolean result = boxContext.color() == colorValue;
+                                        boolean result = boxContext.color() == color;
                                         if (result) removed[0]++;
                                         return result;
                                     });
                                     BoxOutlineConfig.setPermanentBoxOutlineState(permanentState);
-                                    source.sendFeedback(Text.literal("Color " + color + " with " + removed[0] + " members has been removed"));
-                                } catch (NumberFormatException ignored) {
-                                    source.sendFeedback(Text.literal("Not a valid hex-value"));
-                                }
-                                return r;
-                            })
+                                    source.sendFeedback(Text.literal("Color " + colorArgument.getName() + " with " + removed[0] + " members has been removed"));
+                                    return r;
+                                })
+                            )
+                            .then(literal("value")
+                                .then(argument("hex-value", StringArgumentType.string())
+                                    .executes(context -> {
+                                        Set<BoxContext> permanentState = ModUtil.makeMutable(BoxOutlineConfig.getPermanentBoxOutlineState());
+                                        String color = StringArgumentType.getString(context, "hex-value");
+                                        FabricClientCommandSource source = context.getSource();
+                                        try {
+                                            int colorValue = Integer.parseInt(color, 16);
+                                            int[] removed = {0};
+                                            permanentState.removeIf(boxContext -> {
+                                                boolean result = boxContext.color() == colorValue;
+                                                if (result) removed[0]++;
+                                                return result;
+                                            });
+                                            BoxOutlineConfig.setPermanentBoxOutlineState(permanentState);
+                                            source.sendFeedback(Text.literal("Color " + color + " with " + removed[0] + " members has been removed"));
+                                        } catch (NumberFormatException ignored) {
+                                            source.sendFeedback(Text.literal("Not a valid hex-value"));
+                                        }
+                                        return r;
+                                    })
+                                )
+                            )
                         )
-                        .then(argument("radius", FloatArgumentType.floatArg(0))
-                            .executes(context -> {
-                                Set<BoxContext> permanentState = ModUtil.makeMutable(BoxOutlineConfig.getPermanentBoxOutlineState());
-                                FabricClientCommandSource source = context.getSource();
-                                Vec3d position = source.getPosition();
-                                int[] removed = {0};
-                                permanentState.removeIf(boxContext ->
-                                {
-                                    boolean result = position.distanceTo(boxContext.box().getCenter()) <= FloatArgumentType.getFloat(context, "radius");
-                                    if (result) removed[0]++;
-                                    return result;
-                                });
-                                BoxOutlineConfig.setPermanentBoxOutlineState(permanentState);
-                                source.sendFeedback(Text.literal("Removed " + removed[0]));
-                                return r;
-                            })
+                        .then(literal("radius")
+                            .then(argument("radius", FloatArgumentType.floatArg(0))
+                                .executes(context -> {
+                                    Set<BoxContext> permanentState = ModUtil.makeMutable(BoxOutlineConfig.getPermanentBoxOutlineState());
+                                    FabricClientCommandSource source = context.getSource();
+                                    Vec3d position = source.getPosition();
+                                    int[] removed = {0};
+                                    permanentState.removeIf(boxContext ->
+                                    {
+                                        boolean result = position.distanceTo(boxContext.box().getCenter()) <= FloatArgumentType.getFloat(context, "radius");
+                                        if (result) removed[0]++;
+                                        return result;
+                                    });
+                                    BoxOutlineConfig.setPermanentBoxOutlineState(permanentState);
+                                    source.sendFeedback(Text.literal("Removed " + removed[0]));
+                                    return r;
+                                })
+                            )
                         )
                     )
                 )
