@@ -11,6 +11,7 @@ import net.minecraft.command.argument.PosArgument;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
@@ -249,11 +250,17 @@ public class ClientCommands {
 
     private static @NotNull Box getBox(CommandContext<FabricClientCommandSource> context, Vec3d position, Vec2f rotation) {
         ServerCommandSource fakeSource = new ServerCommandSource(null, position, rotation, null, 0, "", Text.empty(), null, null);
+        BlockPos pos1 = context.getArgument("pos1", PosArgument.class).toAbsoluteBlockPos(fakeSource);
+        BlockPos pos2 = context.getArgument("pos2", PosArgument.class).toAbsoluteBlockPos(fakeSource);
         Box box = new Box(
-            new Vec3d(context.getArgument("pos1", PosArgument.class).toAbsoluteBlockPos(fakeSource)),
-            new Vec3d(context.getArgument("pos2", PosArgument.class).toAbsoluteBlockPos(fakeSource))
+            pos1.getX(),
+            pos1.getY(),
+            pos1.getZ(),
+            pos2.getX(),
+            pos2.getY(),
+            pos2.getZ()
         );
-        Box box1 = new Box(
+        return new Box(
             box.minX,
             box.minY,
             box.minZ,
@@ -261,6 +268,5 @@ public class ClientCommands {
             box.maxY + 1,
             box.maxZ + 1
         );
-        return box1;
     }
 }

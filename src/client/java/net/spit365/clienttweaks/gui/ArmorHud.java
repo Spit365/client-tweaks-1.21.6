@@ -1,27 +1,27 @@
 package net.spit365.clienttweaks.gui;
 
-import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.AttributeModifiersComponent;
-import net.minecraft.component.type.EquippableComponent;
 import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.Equipment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
-import net.minecraft.util.Identifier;
-import net.spit365.clienttweaks.ClientTweaks;
+import net.minecraft.util.collection.DefaultedList;
 import net.spit365.clienttweaks.config.ArmorHudConfig;
+import net.spit365.clienttweaks.mixin.PlayerInventoryAccessor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -39,11 +39,11 @@ public class ArmorHud {
     public static final List<EquipmentSlot> ARMOR_SLOTS = List.of(EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET);
 
 	public static void init() {
-		HudElementRegistry.addFirst(Identifier.of(ClientTweaks.MOD_ID, ArmorHudConfig.ARMOR_HUD_ID), (context, tickCounter) -> {
-			MinecraftClient client = MinecraftClient.getInstance();
-			ClientPlayerEntity player = client.player;
-			if (player == null) return;
-			PlayerInventory inventory = player.getInventory();
+        HudRenderCallback.EVENT.register((context, renderTickCounter) -> {
+            MinecraftClient client = MinecraftClient.getInstance();
+            ClientPlayerEntity player = client.player;
+            if (player == null) return;
+            PlayerInventory inventory = player.getInventory();
             ArmorHudConfig.ArmorHudRenderer armorHudRenderer = ArmorHudConfig.getArmorHudRenderer();
 
             if (ArmorHudConfig.isEnabled("armor")) {
@@ -51,10 +51,10 @@ public class ArmorHud {
                     renderArmorIcon(context, client, computeArmorData(inventory), pos, slot);
                 }, new ArmorHudConfig.ArmorHudRenderer.UiPos(context.getScaledWindowWidth(), context.getScaledWindowHeight()));
             }
-			if (ArmorHudConfig.isEnabled("arrows") && inventory.contains(s -> s.isIn(ItemTags.ARROWS)))
+            if (ArmorHudConfig.isEnabled("arrows") && inventory.contains(s -> s.isIn(ItemTags.ARROWS)))
                 armorHudRenderer.arrowRenderer.accept(computeArrowGroups(inventory), (pos, group) -> renderArrowIcon(context, client, group, pos), new ArmorHudConfig.ArmorHudRenderer.UiPos(context.getScaledWindowWidth(), context.getScaledWindowHeight()));
-		});
-	}
+        });
+    }
 
     private static void renderArmorIcon(DrawContext context, MinecraftClient client, ArmorData data, ArmorHudConfig.ArmorHudRenderer.UiPos pos, EquipmentSlot slot) {
         ItemStack equipped = data.equipped().get(slot);
@@ -64,12 +64,12 @@ public class ArmorHud {
             textLength = durability.length();
             context.drawText(client.textRenderer, Text.literal(durability), pos.x(), pos.y() + 5, Colors.WHITE, true);
             context.drawItem(equipped, pos.x() + 25 + 5 * textLength, pos.y());
-            context.drawStackOverlay(client.textRenderer, equipped, pos.x() + 25 + 5 * textLength, pos.y());
+            context.drawItemInSlot(client.textRenderer, equipped, pos.x() + 25 + 5 * textLength, pos.y());
         }
         ItemStack best = data.bestUpgrade().get(slot);
         if (best != null) {
             context.drawItem(best, pos.x() + 5 + 5 * textLength, pos.y());
-            context.drawStackOverlay(client.textRenderer, best, pos.x() + 5 + 5 * textLength, pos.y());
+            context.drawItemInSlot(client.textRenderer, best, pos.x() + 5 + 5 * textLength, pos.y());
         }
     }
 
@@ -90,13 +90,12 @@ public class ArmorHud {
         outer:
         for (int i = 0; i < inventory.size(); i++) {
             ItemStack s = inventory.getStack(i);
-            if (s.isEmpty()) continue;
+            if (s.isEmpty() || !(s.getItem() instanceof Equipment equipment)) continue;
 
-            EquippableComponent eq = s.get(DataComponentTypes.EQUIPPABLE);
             AttributeModifiersComponent am = s.get(DataComponentTypes.ATTRIBUTE_MODIFIERS);
 
-            if (eq == null || am == null) continue;
-            if (!ARMOR_SLOTS.contains(eq.slot())) continue;
+            if (am == null) continue;
+            if (!ARMOR_SLOTS.contains(equipment.getSlotType())) continue;
 
             for (ItemStack worn : equipped.values()) {
                 if (ItemStack.areItemsAndComponentsEqual(worn, s)) continue outer;
@@ -115,8 +114,7 @@ public class ArmorHud {
             double[] bestScore = null;
 
             for (ItemStack candidate : candidates) {
-                EquippableComponent eqC = candidate.get(DataComponentTypes.EQUIPPABLE);
-                if (eqC == null || eqC.slot() != slot) continue;
+                if (!(candidate.getItem() instanceof Equipment equipment) || equipment.getSlotType() != slot) continue;
 
                 Map<String, Double> candidateAttr = buildAttributeMap(candidate, slot);
                 int better = 0;
@@ -176,7 +174,7 @@ public class ArmorHud {
 
     public static LinkedList<ArrowGroup> computeArrowGroups(PlayerInventory inventory) {
         var groups = new LinkedHashMap<Set<StatusEffect>, Integer>();
-        for (ItemStack itemStack : inventory) {
+        for (DefaultedList<ItemStack> itemStacks : ((PlayerInventoryAccessor) inventory).getCombinedInventory()) for (ItemStack itemStack  : itemStacks) {
             if (itemStack.isEmpty() || !itemStack.isIn(ItemTags.ARROWS)) continue;
 
             PotionContentsComponent potionContentsComponent = itemStack.get(DataComponentTypes.POTION_CONTENTS);
@@ -196,7 +194,7 @@ public class ArmorHud {
                 icon = new ItemStack(Items.TIPPED_ARROW);
                 icon.set(
                     DataComponentTypes.POTION_CONTENTS,
-                    new PotionContentsComponent(Optional.empty(), Optional.empty(), effects.stream().map(effect -> new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(effect))).toList(), Optional.empty())
+                    new PotionContentsComponent(Optional.empty(), Optional.empty(), effects.stream().map(effect -> new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(effect))).toList())
                 );
             }
             result.add(new ArrowGroup(icon, entry.getValue()));

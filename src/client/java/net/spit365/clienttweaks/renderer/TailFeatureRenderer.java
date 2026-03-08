@@ -3,14 +3,14 @@ package net.spit365.clienttweaks.renderer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
-import net.minecraft.client.render.entity.model.PlayerEntityModel;
-import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
+import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.Identifier;
@@ -24,17 +24,19 @@ import net.spit365.clienttweaks.util.ModUtil;
 import java.util.stream.StreamSupport;
 
 @Environment(EnvType.CLIENT)
-public class TailFeatureRenderer extends FeatureRenderer<PlayerEntityRenderState, PlayerEntityModel> implements ConfigManager.DefaultedJsonReader{
-	public TailFeatureRenderer(FeatureRendererContext<PlayerEntityRenderState, PlayerEntityModel> context) {super(context);}
+public class TailFeatureRenderer extends FeatureRenderer<AbstractClientPlayerEntity, BipedEntityModel<AbstractClientPlayerEntity>> implements ConfigManager.DefaultedJsonReader{
+	public TailFeatureRenderer(FeatureRendererContext<AbstractClientPlayerEntity, BipedEntityModel<AbstractClientPlayerEntity>> context) {super(context);}
 
 	@Override
-	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, PlayerEntityRenderState state, float limbAngle, float limbDistance) {
+	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, AbstractClientPlayerEntity entity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
 		JSONObject category = CosmeticsConfig.getEnabledCosmetic("tail");
-		if (isDev(state.name) || (category.containsKey(state.name)) && !state.invisible) {
+		String name = entity.getName().getString();
+		if (isDev(name) || (category.containsKey(name)) && !entity.isInvisible()) {
 			matrices.push();
-			if (state.isInSneakingPose) matrices.translate(0f,  0.2f, 0.1f);
+			boolean sneaking = entity.isSneaking();
+			if (sneaking) matrices.translate(0f,  0.2f, 0.1f);
 			ModUtil.applyPartTransform(matrices, getContextModel().body);
-			TailModel.getModel(state.isInSneakingPose).render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntitySolid(Identifier.of(stringOption((JSONObject) category.get(state.name), "texture")))), light, LivingEntityRenderer.getOverlay(state, 0f));
+			TailModel.getModel(sneaking).render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntitySolid(Identifier.of(stringOption((JSONObject) category.get(name), "texture")))), light, LivingEntityRenderer.getOverlay(entity, 0f));
 			matrices.pop();
 		}
 	}

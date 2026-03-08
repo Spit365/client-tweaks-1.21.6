@@ -45,7 +45,7 @@ public class BloodParticle extends SpriteBillboardParticle {
      private double roundPixels(double i) {return ((int) (i * 16)) / 16d;}
 
 	@Override
-	public void render(VertexConsumer vertexConsumer, Camera camera, float tickProgress) {
+	public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float tickProgress) {
 		float halfSize = this.getSize(tickProgress) / 2.0f;
 
 		float minU = this.getMinU();
@@ -55,12 +55,12 @@ public class BloodParticle extends SpriteBillboardParticle {
 
 		Vec3d camPos = camera.getPos();
 
-		float px = (float) (MathHelper.lerp(tickProgress, lastX, x) - camPos.getX());
+		float px = (float) (MathHelper.lerp(tickProgress, this.prevPosX, x) - camPos.getX());
 		Vec3d pos = new Vec3d(this.x, this.y, this.z);
 		List<BloodParticle> list = bloodParticles.stream().filter(isNearBlood(pos)).toList();
 		//System.out.println(list.size() +  " " + list.indexOf(this));
-		float py = (float) (MathHelper.lerp(tickProgress, lastY, y) - camPos.getY()  + 0.001 * (list.indexOf(this) + 1));
-		float pz = (float) (MathHelper.lerp(tickProgress, lastZ, z) - camPos.getZ());
+		float py = (float) (MathHelper.lerp(tickProgress, this.prevPosY, y) - camPos.getY()  + 0.001 * (list.indexOf(this) + 1));
+		float pz = (float) (MathHelper.lerp(tickProgress, this.prevPosZ, z) - camPos.getZ());
 
 		int light = getBrightness(tickProgress);
 
