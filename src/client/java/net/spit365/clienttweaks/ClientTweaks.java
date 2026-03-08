@@ -5,7 +5,6 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.spit365.clienttweaks.config.CosmeticsConfig;
 import net.spit365.clienttweaks.mod.ClientCommands;
 import net.spit365.clienttweaks.gui.ArmorHud;
-import net.spit365.clienttweaks.mod.ClientPackets;
 import net.spit365.clienttweaks.mod.ClientTick;
 import net.spit365.clienttweaks.mod.ModParticles;
 import net.spit365.clienttweaks.renderer.BoxOutlineRenderer;
@@ -19,7 +18,6 @@ public class ClientTweaks implements ClientModInitializer {
 
 	@Override public void onInitializeClient() {
 		ClientCommands.init();
-		ClientPackets.init();
 		ArmorHud.init();
 		ClientTick.init();
 		ModParticles.init();
