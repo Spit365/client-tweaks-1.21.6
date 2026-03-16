@@ -17,7 +17,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.Random;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
-import net.spit365.clienttweaks.ClientTweaks;
 import net.spit365.clienttweaks.config.CosmeticsConfig;
 import org.joml.Quaternionf;
 
@@ -36,47 +35,62 @@ public class ItemFeatureRenderer extends FeatureRenderer<PlayerEntityRenderState
 
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, PlayerEntityRenderState state, float limbAngle, float limbDistance) {
-        Arrays.stream(CosmeticsConfig.loadedCustomCosmetics).filter(jsonObject -> CosmeticsConfig.getEnabledCosmetics().containsKey((String) jsonObject.get("name"))).forEach(cosmetic -> {
-			if (cosmetic.get("matrix_operations") instanceof JSONArray matrixOperations)
-                matrixOperations.stream().map(JSONObject.class::cast).forEach(matrixOperation -> {
-                    switch ((String) matrixOperation.get("type")){
-                        case "push" -> matrices.push();
-                        case "pop" -> matrices.pop();
-                        case "translate" -> matrices.translate(
-                            (float) matrixOperation.get("x"),
-                            (float) matrixOperation.get("y"),
-                            (float) matrixOperation.get("z")
-                        );
-                        case "scale" -> matrices.scale(
-                            (float) matrixOperation.get("x"),
-                            (float) matrixOperation.get("y"),
-                            (float) matrixOperation.get("z")
-                        );
-                        case "multiply" -> matrices.multiply(new Quaternionf(
-                            (float) matrixOperation.get("x"),
-                            (float) matrixOperation.get("y"),
-                            (float) matrixOperation.get("z"),
-                            (float) matrixOperation.get("w")
-                        ));
-                        case "rotate" -> matrices.multiply(new Quaternionf().rotationAxis(
-                            (float) matrixOperation.get("degrees"),
-                            (float) matrixOperation.get("x"),
-                            (float) matrixOperation.get("y"),
-                            (float) matrixOperation.get("z")
-                        ));
-                        default -> throw new RuntimeException("Unsupported matrix operation in one of the loaded, equipped, rendered cosmetics");
-                    }
-                });
-            itemRenderer.renderItem(
-                new ItemStack(Registries.ITEM.get(Identifier.of((String) cosmetic.get("id")))),
-                ItemDisplayContext.FIRST_PERSON_LEFT_HAND,
-                light,
-                OverlayTexture.DEFAULT_UV,
-                matrices,
-                vertexConsumers,
-                world,
-                (world == null? Random.create() : world.random).nextInt()
-            );
+        JSONObject[] loadedCustomCosmetics = CosmeticsConfig.loadedCustomCosmetics;
+        JSONObject enabledCosmetics = CosmeticsConfig.getEnabledCosmetics();
+        Arrays.stream(loadedCustomCosmetics)
+            .filter(jsonObject -> enabledCosmetics.containsKey((String) jsonObject.get("name")))
+            .forEach(cosmetic -> {
+                ItemStack stack = new ItemStack(Registries.ITEM.get(Identifier.of((String) cosmetic.get("item"))));
+                matrices.push();
+                if (cosmetic.get("matrix_operations") instanceof JSONArray matrixOperations)
+                    setupMatrices(matrices, matrixOperations);
+                itemRenderer.renderItem(
+                    stack,
+                    ItemDisplayContext.GROUND,
+                    light,
+                    OverlayTexture.DEFAULT_UV,
+                    matrices,
+                    vertexConsumers,
+                    world,
+                    (world == null? Random.create() : world.random).nextInt()
+                );
+                matrices.pop();
+            });
+    }
+
+    private static void setupMatrices(MatrixStack matrices, JSONArray matrixOperations) {
+        matrixOperations.stream().map(JSONObject.class::cast).forEach(matrixOperation -> {
+            switch ((String) matrixOperation.get("type")){
+                case "push" -> matrices.push();
+                case "pop" -> matrices.pop();
+                case "translate" -> matrices.translate(
+                    dtf(matrixOperation.get("x")),
+                    dtf(matrixOperation.get("y")),
+                    dtf(matrixOperation.get("z"))
+                );
+                case "scale" -> matrices.scale(
+                    dtf(matrixOperation.get("x")),
+                    dtf(matrixOperation.get("y")),
+                    dtf(matrixOperation.get("z"))
+                );
+                case "multiply" -> matrices.multiply(new Quaternionf(
+                    dtf(matrixOperation.get("x")),
+                    dtf(matrixOperation.get("y")),
+                    dtf(matrixOperation.get("z")),
+                    dtf(matrixOperation.get("w"))
+                ));
+                case "rotate" -> matrices.multiply(new Quaternionf().rotationAxis(
+                    dtf(matrixOperation.get("degrees")),
+                    dtf(matrixOperation.get("x")),
+                    dtf(matrixOperation.get("y")),
+                    dtf(matrixOperation.get("z"))
+                ));
+                default -> throw new RuntimeException("Unsupported matrix operation in one of the loaded, equipped, rendered cosmetics");
+            }
         });
+    }
+
+    private static float dtf(Object input) {
+        return ((Double) input).floatValue();
     }
 }

@@ -7,6 +7,7 @@ import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
+import net.minidev.json.parser.JSONParser;
 import net.spit365.clienttweaks.ClientTweaks;
 import net.spit365.clienttweaks.util.ConfigManager;
 
@@ -27,8 +28,8 @@ public class CosmeticsConfig {
 				.<JSONObject>mapMulti((path, result) -> {
 					try {
 						String fileName = path.getFileName().toString();
-						JSONObject customCosmetic = new JSONObject();
-						customCosmetic.put(fileName.substring(0, fileName.lastIndexOf('.')), Objects.requireNonNull(JSONValue.parseWithException(Files.readString(path, StandardCharsets.UTF_8))));
+                        JSONObject customCosmetic = (JSONObject) new JSONParser(JSONParser.DEFAULT_PERMISSIVE_MODE).parse(Files.readString(path, StandardCharsets.UTF_8));
+                        customCosmetic.put("name", fileName.substring(0, fileName.lastIndexOf('.')));
 						result.accept(customCosmetic);
 					} catch (Exception e){
 						ClientTweaks.LOGGER.error("Couldn't load custom cosmetics: {}", e.getMessage());
