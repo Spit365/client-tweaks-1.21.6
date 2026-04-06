@@ -46,13 +46,17 @@ public class ArmorHud {
 			PlayerInventory inventory = player.getInventory();
             ArmorHudConfig.ArmorHudRenderer armorHudRenderer = ArmorHudConfig.getArmorHudRenderer();
 
-            if (ArmorHudConfig.isEnabled("armor")) {
-                armorHudRenderer.armorHudRender.accept((pos, slot) -> {
-                    renderArmorIcon(context, client, computeArmorData(inventory), pos, slot);
-                }, new ArmorHudConfig.ArmorHudRenderer.UiPos(context.getScaledWindowWidth(), context.getScaledWindowHeight()));
-            }
+            if (ArmorHudConfig.isEnabled("armor"))
+                armorHudRenderer.armorHudRender.accept(
+                    (pos, slot) -> renderArmorIcon(context, client, computeArmorData(inventory), pos, slot),
+                    new ArmorHudConfig.ArmorHudRenderer.UiPos(context.getScaledWindowWidth(), context.getScaledWindowHeight())
+                );
 			if (ArmorHudConfig.isEnabled("arrows") && inventory.contains(s -> s.isIn(ItemTags.ARROWS)))
-                armorHudRenderer.arrowRenderer.accept(computeArrowGroups(inventory), (pos, group) -> renderArrowIcon(context, client, group, pos), new ArmorHudConfig.ArmorHudRenderer.UiPos(context.getScaledWindowWidth(), context.getScaledWindowHeight()));
+                armorHudRenderer.arrowRenderer.accept(
+                    computeArrowGroups(inventory),
+                    (pos, group) -> renderArrowIcon(context, client, group, pos),
+                    new ArmorHudConfig.ArmorHudRenderer.UiPos(context.getScaledWindowWidth(), context.getScaledWindowHeight())
+                );
 		});
 	}
 

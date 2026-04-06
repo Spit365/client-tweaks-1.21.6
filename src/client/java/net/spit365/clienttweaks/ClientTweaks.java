@@ -2,6 +2,7 @@ package net.spit365.clienttweaks;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
+import net.spit365.clienttweaks.config.BoxOutlineConfig;
 import net.spit365.clienttweaks.config.CosmeticsConfig;
 import net.spit365.clienttweaks.mod.ClientCommands;
 import net.spit365.clienttweaks.gui.ArmorHud;
@@ -23,5 +24,10 @@ public class ClientTweaks implements ClientModInitializer {
 		ModParticles.init();
         CosmeticsConfig.init();
 		BoxOutlineRenderer.init();
+	}
+
+	public static void updateConfig() {
+		CosmeticsConfig.updateCosmetics();
+		BoxOutlineConfig.updateCachedEdges();
 	}
 }

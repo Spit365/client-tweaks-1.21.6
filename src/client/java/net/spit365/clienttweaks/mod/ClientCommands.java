@@ -36,6 +36,12 @@ public class ClientCommands {
     public static void init() {
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, commandRegistryAccess) -> dispatcher
             .register(literal(ClientTweaks.MOD_ID)
+                .then(literal("update")
+                    .executes(context -> {
+                        ClientTweaks.updateConfig();
+                        return r;
+                    })
+                )
                 .then(literal(BoxOutlineConfig.BOX_OUTLINES_ID)
                     .then(literal("add")
                         .then(argument("color", ColorArgumentType.color())
@@ -253,7 +259,7 @@ public class ClientCommands {
             new Vec3d(context.getArgument("pos1", PosArgument.class).toAbsoluteBlockPos(fakeSource)),
             new Vec3d(context.getArgument("pos2", PosArgument.class).toAbsoluteBlockPos(fakeSource))
         );
-        Box box1 = new Box(
+        return new Box(
             box.minX,
             box.minY,
             box.minZ,
@@ -261,6 +267,5 @@ public class ClientCommands {
             box.maxY + 1,
             box.maxZ + 1
         );
-        return box1;
     }
 }

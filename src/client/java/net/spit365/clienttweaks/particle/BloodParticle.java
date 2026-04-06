@@ -58,7 +58,6 @@ public class BloodParticle extends SpriteBillboardParticle {
 		float px = (float) (MathHelper.lerp(tickProgress, lastX, x) - camPos.getX());
 		Vec3d pos = new Vec3d(this.x, this.y, this.z);
 		List<BloodParticle> list = bloodParticles.stream().filter(isNearBlood(pos)).toList();
-		//System.out.println(list.size() +  " " + list.indexOf(this));
 		float py = (float) (MathHelper.lerp(tickProgress, lastY, y) - camPos.getY()  + 0.001 * (list.indexOf(this) + 1));
 		float pz = (float) (MathHelper.lerp(tickProgress, lastZ, z) - camPos.getZ());
 

@@ -3,25 +3,25 @@ package net.spit365.clienttweaks.config;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minidev.json.JSONObject;
-import net.spit365.clienttweaks.ClientTweaks;
 import net.spit365.clienttweaks.renderer.BoxOutlineRenderer;
 import net.spit365.clienttweaks.util.BoxContext;
 import net.spit365.clienttweaks.util.ConfigManager;
 import net.spit365.clienttweaks.util.EdgeCalculator;
 
-import java.util.Random;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class BoxOutlineConfig {
     public static final String BOX_OUTLINES_ID = "box_outlines";
+    public static Set<BoxOutlineRenderer.ColoredEdge> state = new HashSet<>();
 
     public static Set<BoxOutlineRenderer.ColoredEdge> getCachedEdges() {
         return cachedEdges;
     }
 
-    private static Set<BoxOutlineRenderer.ColoredEdge> cachedEdges = EdgeCalculator.getColoredEdges(getPermanentBoxOutlineState());
+    private static Set<BoxOutlineRenderer.ColoredEdge> cachedEdges;
+    static { updateCachedEdges(); }
 
     public static Set<BoxContext> getPermanentBoxOutlineState() {
         return ConfigManager.read(ConfigManager.file(), BOX_OUTLINES_ID).values().stream()
@@ -69,5 +69,13 @@ public class BoxOutlineConfig {
 
     private static void updateCachedEdges(Set<BoxContext> permanentBoxOutlineState) {
         cachedEdges = EdgeCalculator.getColoredEdges(permanentBoxOutlineState);
+    }
+
+    public static void updateCachedEdges() {
+        updateCachedEdges(getPermanentBoxOutlineState());
+    }
+
+    public static void setState(Set<BoxContext> newState) {
+        state = EdgeCalculator.getColoredEdges(newState);
     }
 }

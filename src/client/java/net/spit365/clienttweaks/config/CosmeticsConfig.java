@@ -6,7 +6,6 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import net.minidev.json.JSONObject;
-import net.minidev.json.JSONValue;
 import net.minidev.json.parser.JSONParser;
 import net.spit365.clienttweaks.ClientTweaks;
 import net.spit365.clienttweaks.util.ConfigManager;
@@ -15,7 +14,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Objects;
 import java.util.stream.Stream;
 
 public class CosmeticsConfig {
@@ -59,17 +57,17 @@ public class CosmeticsConfig {
     }
 
     public static void init(){
-        loadCosmetics();
+        updateCosmetics();
         ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
             public static final Identifier ID = Identifier.of(ClientTweaks.MOD_ID, "custom_cosmetics");
             @Override public Identifier getFabricId() {return ID;}
             @Override public void reload(ResourceManager manager) {
-				loadCosmetics();
+				updateCosmetics();
 			}
         });
     }
 
-	private static void loadCosmetics() {
+	public static void updateCosmetics() {
 		loadedCustomCosmetics = getCustomCosmetics();
 	}
 }
