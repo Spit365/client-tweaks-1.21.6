@@ -17,7 +17,7 @@ import java.nio.file.Paths;
 import java.util.stream.Stream;
 
 public class CosmeticsConfig {
-    public static final String ASSETS_FOLDER = ClientTweaks.CONFIG_FOLDER + "assets/";
+    public static final String ASSETS_FOLDER = ClientTweaks.CONFIG_FOLDER + "cosmetics/";
     public static JSONObject[] loadedCustomCosmetics;
 
     public static JSONObject[] getCustomCosmetics(){
