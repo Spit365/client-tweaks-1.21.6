@@ -2,6 +2,7 @@ package net.spit365.clienttweaks.gui;
 
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.component.DataComponentTypes;
@@ -22,20 +23,16 @@ import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.spit365.clienttweaks.ClientTweaks;
 import net.spit365.clienttweaks.config.ArmorHudConfig;
+import org.apache.logging.log4j.util.TriConsumer;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 public class ArmorHud {
-    public static class Layout {
-        public static final int Y_SIZE = 80;
 
-        public static int getXSize(int textLength) {
-            return textLength * 5 + 40;
-        }
-    }
     public static final List<EquipmentSlot> ARMOR_SLOTS = List.of(EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET);
 
 	public static void init() {
@@ -44,44 +41,170 @@ public class ArmorHud {
 			ClientPlayerEntity player = client.player;
 			if (player == null) return;
 			PlayerInventory inventory = player.getInventory();
-            ArmorHudConfig.ArmorHudRenderer armorHudRenderer = ArmorHudConfig.getArmorHudRenderer();
+            ArmorHudRenderer armorHudRenderer = ArmorHudConfig.getArmorHudRenderer();
 
             if (ArmorHudConfig.isEnabled("armor"))
-                armorHudRenderer.armorHudRender.accept(
-                    (pos, slot) -> renderArmorIcon(context, client, computeArmorData(inventory), pos, slot),
-                    new ArmorHudConfig.ArmorHudRenderer.UiPos(context.getScaledWindowWidth(), context.getScaledWindowHeight())
-                );
+                armorHudRenderer.armorHudRender.accept(context, client);
 			if (ArmorHudConfig.isEnabled("arrows") && inventory.contains(s -> s.isIn(ItemTags.ARROWS)))
                 armorHudRenderer.arrowRenderer.accept(
                     computeArrowGroups(inventory),
-                    (pos, group) -> renderArrowIcon(context, client, group, pos),
-                    new ArmorHudConfig.ArmorHudRenderer.UiPos(context.getScaledWindowWidth(), context.getScaledWindowHeight())
+                    (pos, group) -> ArmorHudRenderer.renderArrowIcon(context, client, group, pos),
+                    new ArmorHudRenderer.UiPos(context.getScaledWindowWidth(), context.getScaledWindowHeight())
                 );
 		});
 	}
 
-    private static void renderArmorIcon(DrawContext context, MinecraftClient client, ArmorData data, ArmorHudConfig.ArmorHudRenderer.UiPos pos, EquipmentSlot slot) {
-        ItemStack equipped = data.equipped().get(slot);
-        int textLength = 0;
-        if (!equipped.isEmpty()) {
-            String durability = String.valueOf(equipped.getMaxDamage() - equipped.getDamage());
-            textLength = durability.length();
-            context.drawText(client.textRenderer, Text.literal(durability), pos.x(), pos.y() + 5, Colors.WHITE, true);
-            context.drawItem(equipped, pos.x() + 25 + 5 * textLength, pos.y());
-            context.drawStackOverlay(client.textRenderer, equipped, pos.x() + 25 + 5 * textLength, pos.y());
-        }
-        ItemStack best = data.bestUpgrade().get(slot);
-        if (best != null) {
-            context.drawItem(best, pos.x() + 5 + 5 * textLength, pos.y());
-            context.drawStackOverlay(client.textRenderer, best, pos.x() + 5 + 5 * textLength, pos.y());
-        }
-    }
 
-    private static void renderArrowIcon(DrawContext context, MinecraftClient mc, ArrowGroup arrowGroups, ArmorHudConfig.ArmorHudRenderer.UiPos pos) {
-        ItemStack icon = arrowGroups.icon();
-        String text = String.valueOf(arrowGroups.count());
-        context.drawText(mc.textRenderer, text, pos.x(), pos.y() + 5, Colors.WHITE, true);
-        context.drawItem(icon, pos.x() + (5 * (text.length() + 1)), pos.y());
+    public enum ArmorHudRenderer {
+	    TOP_RIGHT((arrowGroups, arrowIconRenderConsumer, windowSize) -> {
+            for (int i = 0; i < arrowGroups.size(); i++) {
+                ArrowGroup group = arrowGroups.get(i);
+                arrowIconRenderConsumer.accept(new UiPos(windowSize.x - 30, 20 * (i + 4)), group);
+            }
+        }, (context, client) -> {
+            ArmorData data = computeArmorData(client.player.getInventory());
+            int windowWidth = context.getScaledWindowWidth() - 20;
+            for (EquipmentSlot slot : ARMOR_SLOTS) {
+                int y = switch (slot){
+                    case HEAD -> 0;
+                    case CHEST -> 20;
+                    case LEGS -> 40;
+                    case FEET -> 60;
+                    default -> throw new IllegalStateException("Unexpected value: " + slot);
+                };
+                renderArmorIcon(context, data, windowWidth - 40, y, slot, client.textRenderer);
+
+            }
+        }),
+		TOP_LEFT((arrowGroups, arrowIconRenderConsumer, uiPos) -> {
+            for (int i = 0; i < arrowGroups.size(); i++) {
+                ArrowGroup group = arrowGroups.get(i);
+                arrowIconRenderConsumer.accept(new UiPos(0, 20 * (i + 4)), group);
+            }
+        }, (context, client) -> {
+            ArmorData data = computeArmorData(client.player.getInventory());
+            for (EquipmentSlot slot : ARMOR_SLOTS) {
+                int y = switch (slot){
+                    case HEAD -> 0;
+                    case CHEST -> 20;
+                    case LEGS -> 40;
+                    case FEET -> 60;
+                    default -> throw new IllegalStateException("Unexpected value: " + slot);
+                };
+                renderArmorIcon(context, data, 0, y, slot, client.textRenderer);
+            }
+        }),
+		BOTTOM_RIGHT((arrowGroups, arrowIconRenderConsumer, uiPos) -> {
+            for (int i = 0; i < arrowGroups.size(); i++) {
+                ArrowGroup group = arrowGroups.get(i);
+                arrowIconRenderConsumer.accept(new UiPos(uiPos.x - 20, uiPos.y - (20 * (i + 1))), group);
+            }
+        }, (context, client) -> {
+            int x = context.getScaledWindowWidth() - 60;
+            ArmorData data = computeArmorData(client.player.getInventory());
+            for (EquipmentSlot slot : ARMOR_SLOTS) {
+                int y = context.getScaledWindowHeight() - switch (slot){
+                    case HEAD -> 80;
+                    case CHEST -> 60;
+                    case LEGS -> 40;
+                    case FEET -> 20;
+                    default -> throw new IllegalStateException("Unexpected value: " + slot);
+                };
+                renderArmorIcon(context, data, x, y, slot, client.textRenderer);
+            }
+        }),
+		BOTTOM_LEFT((arrowGroups, arrowIconRenderConsumer, uiPos) -> {
+            for (int i = 0; i < arrowGroups.size(); i++) {
+                ArrowGroup group = arrowGroups.get(i);
+                arrowIconRenderConsumer.accept(new UiPos(0, uiPos.y - (20 * (i + 1))), group);
+            }
+        }, (context, client) -> {
+            int height = context.getScaledWindowHeight();
+            ArmorData data = computeArmorData(client.player.getInventory());
+            for (EquipmentSlot slot : ARMOR_SLOTS) {
+                int y = height - switch (slot){
+                    case HEAD -> 80;
+                    case CHEST -> 60;
+                    case LEGS -> 40;
+                    case FEET -> 20;
+                    default -> throw new IllegalStateException("Unexpected value: " + slot);
+                };
+                renderArmorIcon(context, data, 0, y, slot, client.textRenderer);
+            }
+        }),
+		HOTBAR((arrowGroups, arrowIconRenderConsumer, uiPos) -> {
+            for (int i = 0; i < arrowGroups.size(); i++) {
+                ArrowGroup group = arrowGroups.get(i);
+                arrowIconRenderConsumer.accept(new UiPos(uiPos.x - 20, 20 * (i + 4)), group);
+
+            }
+        }, (context, client) -> {
+            ArmorData data = computeArmorData(client.player.getInventory());
+            int width = context.getScaledWindowWidth() / 4;
+            int height = context.getScaledWindowWidth() / 2;
+            for (EquipmentSlot slot : ARMOR_SLOTS) {
+                int x;
+                int y;
+                switch (slot) {
+                    case HEAD -> {
+                        x = width - 20;
+                        y = height - 40;
+                    }
+                    case CHEST -> {
+                        x = width - 20;
+                        y = height - 20;
+                    }
+                    case LEGS -> {
+                        x = width * 3 - 20;
+                        y = height - 40;
+                    }
+                    case FEET -> {
+                        x = width * 3 - 20;
+                        y = height - 20;
+                    }
+                    default -> throw new IllegalStateException("Unexpected value: " + slot);
+                }
+                renderArmorIcon(context, data, x, y, slot, client.textRenderer);
+            }
+        });
+
+        public final TriConsumer<List<ArrowGroup>, ArrowIconRenderConsumer, UiPos> arrowRenderer;
+        public final BiConsumer<DrawContext, MinecraftClient> armorHudRender;
+
+        ArmorHudRenderer(TriConsumer<List<ArrowGroup>, ArrowIconRenderConsumer, UiPos> arrowRenderer, BiConsumer<DrawContext, MinecraftClient> armorHudRender){
+            this.arrowRenderer = arrowRenderer;
+            this.armorHudRender = armorHudRender;
+        }
+
+        public record UiPos(int x, int y) {}
+
+        @FunctionalInterface public interface ArrowIconRenderConsumer {
+            void accept(UiPos pos, ArrowGroup group);
+        }
+
+        private static void renderArmorIcon(DrawContext context, ArmorData data, int x, int y, EquipmentSlot slot, TextRenderer textRenderer) {
+            ItemStack equipped = data.equipped().get(slot);
+            int textLength = 0;
+            if (!equipped.isEmpty()) {
+                String durability = String.valueOf(equipped.getMaxDamage() - equipped.getDamage());
+                textLength = durability.length();
+                context.drawText(textRenderer, Text.literal(durability), x, y + 5, Colors.WHITE, true);
+                context.drawItem(equipped, x + 25 + 5 * textLength, y);
+                context.drawStackOverlay(textRenderer, equipped, x + 25 + 5 * textLength, y);
+            }
+            ItemStack best = data.bestUpgrade().get(slot);
+            if (best != null) {
+                context.drawItem(best, x + 5 + 5 * textLength, y);
+                context.drawStackOverlay(textRenderer, best, x + 5 + 5 * textLength, y);
+            }
+        }
+
+        private static void renderArrowIcon(DrawContext context, MinecraftClient mc, ArrowGroup arrowGroups, UiPos pos) {
+            ItemStack icon = arrowGroups.icon();
+            String text = String.valueOf(arrowGroups.count());
+            context.drawText(mc.textRenderer, text, pos.x(), pos.y() + 5, Colors.WHITE, true);
+            context.drawItem(icon, pos.x() + (5 * (text.length() + 1)), pos.y());
+        }
     }
 
     public static ArmorData computeArmorData(PlayerInventory inventory) {
