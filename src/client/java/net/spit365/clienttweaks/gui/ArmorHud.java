@@ -24,7 +24,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.spit365.clienttweaks.ClientTweaks;
 import net.spit365.clienttweaks.config.ArmorHudConfig;
-import org.apache.logging.log4j.util.TriConsumer;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 public class ArmorHud {
-
     public static final List<EquipmentSlot> ARMOR_SLOTS = List.of(EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET);
 
 	public static void init() {
@@ -44,23 +43,17 @@ public class ArmorHud {
 			PlayerInventory inventory = player.getInventory();
             ArmorHudRenderer armorHudRenderer = ArmorHudConfig.getArmorHudRenderer();
 
-            if (ArmorHudConfig.isEnabled("armor"))
-                armorHudRenderer.armorHudRender.accept(context, client);
-			if (ArmorHudConfig.isEnabled("arrows") && inventory.contains(s -> s.isIn(ItemTags.ARROWS)))
-                armorHudRenderer.arrowRenderer.accept(
-                    computeArrowGroups(inventory),
-                    (pos, group) -> ArmorHudRenderer.renderArrowIcon(context, client, group, pos),
-                    new ArmorHudRenderer.UiPos(context.getScaledWindowWidth(), context.getScaledWindowHeight())
-                );
+            if (ArmorHudConfig.isEnabled("armor")) armorHudRenderer.armorHudRender.accept(context, client);
+			if (ArmorHudConfig.isEnabled("arrows") && inventory.contains(s -> s.isIn(ItemTags.ARROWS))) armorHudRenderer.arrowRenderer.accept(context, client);
 		});
 	}
 
-
     public enum ArmorHudRenderer {
-	    TOP_RIGHT((arrowGroups, arrowIconRenderConsumer, windowSize) -> {
+	    TOP_RIGHT((context, client) -> {
+            List<ArrowGroup> arrowGroups = computeArrowGroups(client.player.getInventory());
             for (int i = 0; i < arrowGroups.size(); i++) {
                 ArrowGroup group = arrowGroups.get(i);
-                arrowIconRenderConsumer.accept(new UiPos(windowSize.x - 30, 20 * (i + 4)), group);
+                renderArrowIcon(context, client, group, context.getScaledWindowWidth() - 30, 20 * (i + 4));
             }
         }, (context, client) -> {
             ArmorData data = computeArmorData(client.player.getInventory());
@@ -78,10 +71,11 @@ public class ArmorHud {
 
             }
         }),
-		TOP_LEFT((arrowGroups, arrowIconRenderConsumer, uiPos) -> {
+		TOP_LEFT((context, client) -> {
+            List<ArrowGroup> arrowGroups = computeArrowGroups(client.player.getInventory());
             for (int i = 0; i < arrowGroups.size(); i++) {
                 ArrowGroup group = arrowGroups.get(i);
-                arrowIconRenderConsumer.accept(new UiPos(0, 20 * (i + 4)), group);
+                renderArrowIcon(context, client, group, 0, 20 * (i + 4));
             }
         }, (context, client) -> {
             ArmorData data = computeArmorData(client.player.getInventory());
@@ -97,10 +91,11 @@ public class ArmorHud {
                 renderArmorIcon(context, data, 0, y, slot, client.textRenderer, Alignment.LEFT, durabilityLength);
             }
         }),
-		BOTTOM_RIGHT((arrowGroups, arrowIconRenderConsumer, uiPos) -> {
+		BOTTOM_RIGHT((context, client) -> {
+            List<ArrowGroup> arrowGroups = computeArrowGroups(client.player.getInventory());
             for (int i = 0; i < arrowGroups.size(); i++) {
                 ArrowGroup group = arrowGroups.get(i);
-                arrowIconRenderConsumer.accept(new UiPos(uiPos.x - 20, uiPos.y - (20 * (i + 1))), group);
+                renderArrowIcon(context, client, group, context.getScaledWindowWidth() - 20, context.getScaledWindowHeight() - (20 * (i + 1)));
             }
         }, (context, client) -> {
             int x = context.getScaledWindowWidth() - 60;
@@ -117,10 +112,11 @@ public class ArmorHud {
                 renderArmorIcon(context, data, x, y, slot, client.textRenderer, Alignment.RIGHT, durabilityLength);
             }
         }),
-		BOTTOM_LEFT((arrowGroups, arrowIconRenderConsumer, uiPos) -> {
+		BOTTOM_LEFT((context, client) -> {
+            List<ArrowGroup> arrowGroups = computeArrowGroups(client.player.getInventory());
             for (int i = 0; i < arrowGroups.size(); i++) {
                 ArrowGroup group = arrowGroups.get(i);
-                arrowIconRenderConsumer.accept(new UiPos(0, uiPos.y - (20 * (i + 1))), group);
+                renderArrowIcon(context, client, group, 0, context.getScaledWindowHeight() - (20 * (i + 1)));
             }
         }, (context, client) -> {
             int height = context.getScaledWindowHeight();
@@ -137,11 +133,11 @@ public class ArmorHud {
                 renderArmorIcon(context, data, 0, y, slot, client.textRenderer, Alignment.LEFT, durabilityLength);
             }
         }),
-		HOTBAR((arrowGroups, arrowIconRenderConsumer, uiPos) -> {
+		HOTBAR((context, client) -> {
+            List<ArrowGroup> arrowGroups = computeArrowGroups(client.player.getInventory());
             for (int i = 0; i < arrowGroups.size(); i++) {
                 ArrowGroup group = arrowGroups.get(i);
-                arrowIconRenderConsumer.accept(new UiPos(uiPos.x - 20, 20 * (i + 4)), group);
-
+                renderArrowIcon(context, client, group, context.getScaledWindowWidth() - 20, 20 * (i + 4));
             }
         }, (context, client) -> {
             ArmorData data = computeArmorData(client.player.getInventory());
@@ -180,20 +176,14 @@ public class ArmorHud {
             }
         });
 
-        public final TriConsumer<List<ArrowGroup>, ArrowIconRenderConsumer, UiPos> arrowRenderer;
+        public final BiConsumer<DrawContext, MinecraftClient> arrowRenderer;
         public final BiConsumer<DrawContext, MinecraftClient> armorHudRender;
 
-        ArmorHudRenderer(TriConsumer<List<ArrowGroup>, ArrowIconRenderConsumer, UiPos> arrowRenderer, BiConsumer<DrawContext, MinecraftClient> armorHudRender){
+        ArmorHudRenderer(BiConsumer<DrawContext, MinecraftClient> arrowRenderer, BiConsumer<DrawContext, MinecraftClient> armorHudRender){
             this.arrowRenderer = arrowRenderer;
             this.armorHudRender = armorHudRender;
         }
 
-        public record UiPos(int x, int y) {}
-        private enum Alignment { LEFT, RIGHT }
-
-        @FunctionalInterface public interface ArrowIconRenderConsumer {
-            void accept(UiPos pos, ArrowGroup group);
-        }
 
         private static int calcDurabilityLength(ArmorData data) {
             Map<EquipmentSlot, ItemStack> equipped = data.equipped();
@@ -209,7 +199,7 @@ public class ArmorHud {
             return durabilityLength;
         }
 
-        private static void renderArmorIcon(DrawContext context, ArmorData data, int x, int y, EquipmentSlot slot, TextRenderer textRenderer, Alignment alignment, int durabilityLength) {
+        private static void renderArmorIcon(DrawContext context, @NotNull ArmorData data, int x, int y, EquipmentSlot slot, TextRenderer textRenderer, Alignment alignment, int durabilityLength) {
             ItemStack equipped = data.equipped().get(slot);
             String literalDurability = "";
             int color = Colors.BLACK;
@@ -245,7 +235,6 @@ public class ArmorHud {
                 case RIGHT -> {
                     xEqItem = x + 20;
                     xText = x + 40;
-                    x = durabilityLength * 5 + 45;
                 }
             }
 
@@ -262,139 +251,142 @@ public class ArmorHud {
             }
         }
 
-        private static void renderArrowIcon(DrawContext context, MinecraftClient mc, ArrowGroup arrowGroups, UiPos pos) {
-            ItemStack icon = arrowGroups.icon();
-            String text = String.valueOf(arrowGroups.count());
-            context.drawText(mc.textRenderer, text, pos.x(), pos.y() + 5, Colors.WHITE, true);
-            context.drawItem(icon, pos.x() + (5 * (text.length() + 1)), pos.y());
-        }
-    }
-
-    public static ArmorData computeArmorData(PlayerInventory inventory) {
-        Map<EquipmentSlot, ItemStack> equipped = new EnumMap<>(EquipmentSlot.class);
-        for (EquipmentSlot slot : ARMOR_SLOTS)
-            equipped.put(slot, inventory.getStack(slot.getOffsetEntitySlotId(36)));
-
-        List<ItemStack> candidates = new ArrayList<>();
-
-        outer:
-        for (int i = 0; i < inventory.size(); i++) {
-            ItemStack s = inventory.getStack(i);
-            if (s.isEmpty()) continue;
-
-            EquippableComponent eq = s.get(DataComponentTypes.EQUIPPABLE);
-            AttributeModifiersComponent am = s.get(DataComponentTypes.ATTRIBUTE_MODIFIERS);
-
-            if (eq == null || am == null) continue;
-            if (!ARMOR_SLOTS.contains(eq.slot())) continue;
-
-            for (ItemStack worn : equipped.values()) {
-                if (ItemStack.areItemsAndComponentsEqual(worn, s)) continue outer;
-            }
-
-            candidates.add(s);
+        private static void renderArrowIcon(@NotNull DrawContext context, @NotNull MinecraftClient mc, @NotNull ArrowGroup arrowGroup, int x, int y) {
+            ItemStack icon = arrowGroup.icon();
+            String text = String.valueOf(arrowGroup.count());
+            context.drawText(mc.textRenderer, text, x, y + 5, Colors.WHITE, true);
+            context.drawItem(icon, x + (5 * (text.length() + 1)), y);
         }
 
-        Map<EquipmentSlot, ItemStack> best = new EnumMap<>(EquipmentSlot.class);
+        @Contract("_ -> new")
+        private static @NotNull ArmorData computeArmorData(PlayerInventory inventory) {
+            Map<EquipmentSlot, ItemStack> equipped = new EnumMap<>(EquipmentSlot.class);
+            for (EquipmentSlot slot : ARMOR_SLOTS)
+                equipped.put(slot, inventory.getStack(slot.getOffsetEntitySlotId(36)));
 
-        for (EquipmentSlot slot : ARMOR_SLOTS) {
-            ItemStack eq = equipped.get(slot);
-            Map<String, Double> equippedAttr = buildAttributeMap(eq, slot);
+            List<ItemStack> candidates = new ArrayList<>();
 
-            ItemStack bestStack = null;
-            double[] bestScore = null;
+            outer:
+            for (int i = 0; i < inventory.size(); i++) {
+                ItemStack s = inventory.getStack(i);
+                if (s.isEmpty()) continue;
 
-            for (ItemStack candidate : candidates) {
-                EquippableComponent eqC = candidate.get(DataComponentTypes.EQUIPPABLE);
-                if (eqC == null || eqC.slot() != slot) continue;
+                EquippableComponent eq = s.get(DataComponentTypes.EQUIPPABLE);
+                AttributeModifiersComponent am = s.get(DataComponentTypes.ATTRIBUTE_MODIFIERS);
 
-                Map<String, Double> candidateAttr = buildAttributeMap(candidate, slot);
-                int better = 0;
-                int worse = 0;
-                double sum = 0;
-                Set<String> keys = new HashSet<>(candidateAttr.keySet());
-                keys.addAll(equippedAttr.keySet());
+                if (eq == null || am == null) continue;
+                if (!ARMOR_SLOTS.contains(eq.slot())) continue;
 
-                for (String k : keys) {
-                    double diff = candidateAttr.getOrDefault(k, 0.0) - equippedAttr.getOrDefault(k, 0.0);
-                    sum += diff;
-                    if (diff > 0) better++;
-                    else if (diff < 0) worse++;
+                for (ItemStack worn : equipped.values()) {
+                    if (ItemStack.areItemsAndComponentsEqual(worn, s)) continue outer;
                 }
-                double[] sc = new double[]{better, -worse, sum, candidateAttr.size()};
 
-                if (sc[0] <= 0) continue;
+                candidates.add(s);
+            }
 
-                //0: better, 1: worse, 2: sumDelta, 3: candSize
-                if (bestScore == null ||
-                    sc[0] > bestScore[0] ||
-                    (sc[0] == bestScore[0] && sc[1] > bestScore[1]) ||
-                    (sc[0] == bestScore[0] && sc[1] == bestScore[1] && sc[2] > bestScore[2]) ||
-                    (sc[0] == bestScore[0] && sc[1] == bestScore[1] && sc[2] == bestScore[2] && sc[3] > bestScore[3])) {
+            Map<EquipmentSlot, ItemStack> best = new EnumMap<>(EquipmentSlot.class);
 
-                    bestStack = candidate;
-                    bestScore = sc;
+            for (EquipmentSlot slot : ARMOR_SLOTS) {
+                ItemStack eq = equipped.get(slot);
+                Map<String, Double> equippedAttr = buildAttributeMap(eq, slot);
+
+                ItemStack bestStack = null;
+                double[] bestScore = null;
+
+                for (ItemStack candidate : candidates) {
+                    EquippableComponent eqC = candidate.get(DataComponentTypes.EQUIPPABLE);
+                    if (eqC == null || eqC.slot() != slot) continue;
+
+                    Map<String, Double> candidateAttr = buildAttributeMap(candidate, slot);
+                    int better = 0;
+                    int worse = 0;
+                    double sum = 0;
+                    Set<String> keys = new HashSet<>(candidateAttr.keySet());
+                    keys.addAll(equippedAttr.keySet());
+
+                    for (String k : keys) {
+                        double diff = candidateAttr.getOrDefault(k, 0.0) - equippedAttr.getOrDefault(k, 0.0);
+                        sum += diff;
+                        if (diff > 0) better++;
+                        else if (diff < 0) worse++;
+                    }
+                    double[] sc = new double[]{better, -worse, sum, candidateAttr.size()};
+
+                    if (sc[0] <= 0) continue;
+
+                    //0: better, 1: worse, 2: sumDelta, 3: candSize
+                    if (bestScore == null ||
+                        sc[0] > bestScore[0] ||
+                        (sc[0] == bestScore[0] && sc[1] > bestScore[1]) ||
+                        (sc[0] == bestScore[0] && sc[1] == bestScore[1] && sc[2] > bestScore[2]) ||
+                        (sc[0] == bestScore[0] && sc[1] == bestScore[1] && sc[2] == bestScore[2] && sc[3] > bestScore[3])) {
+
+                        bestStack = candidate;
+                        bestScore = sc;
+                    }
                 }
+
+                if (bestStack != null) best.put(slot, bestStack);
             }
 
-            if (bestStack != null) best.put(slot, bestStack);
+            return new ArmorData(equipped, best);
         }
 
-        return new ArmorData(equipped, best);
-    }
+        private static @NotNull Map<String, Double> buildAttributeMap(ItemStack stack, EquipmentSlot slot) {
+            Map<String, Double> map = new HashMap<>();
+            if (stack == null || stack.isEmpty()) return map;
 
-    private static @NotNull Map<String, Double> buildAttributeMap(ItemStack stack, EquipmentSlot slot) {
-        Map<String, Double> map = new HashMap<>();
-        if (stack == null || stack.isEmpty()) return map;
+            AttributeModifiersComponent attrs = stack.get(DataComponentTypes.ATTRIBUTE_MODIFIERS);
+            if (attrs == null) return map;
 
-        AttributeModifiersComponent attrs = stack.get(DataComponentTypes.ATTRIBUTE_MODIFIERS);
-        if (attrs == null) return map;
+            for (AttributeModifiersComponent.Entry e : attrs.modifiers()) {
+                if (e.modifier().operation() != EntityAttributeModifier.Operation.ADD_VALUE || (e.slot() != null && !e.slot().matches(slot))) continue;
+                String key;
+                try {
+                    key = String.valueOf(Registries.ATTRIBUTE.getId(e.attribute().value()));
+                } catch (Throwable ignore) {
+                    key = String.valueOf(e.modifier().id());
+                }
 
-        for (AttributeModifiersComponent.Entry e : attrs.modifiers()) {
-            if (e.modifier().operation() != EntityAttributeModifier.Operation.ADD_VALUE || (e.slot() != null && !e.slot().matches(slot))) continue;
-            String key;
-            try {
-                key = String.valueOf(Registries.ATTRIBUTE.getId(e.attribute().value()));
-            } catch (Throwable ignore) {
-                key = String.valueOf(e.modifier().id());
+                map.merge(key, e.modifier().value(), Double::sum);
+            }
+            return map;
+        }
+
+        private static @NotNull LinkedList<ArrowGroup> computeArrowGroups(@NotNull PlayerInventory inventory) {
+            var groups = new LinkedHashMap<Set<StatusEffect>, Integer>();
+            for (ItemStack itemStack : inventory) {
+                if (itemStack.isEmpty() || !itemStack.isIn(ItemTags.ARROWS)) continue;
+
+                PotionContentsComponent potionContentsComponent = itemStack.get(DataComponentTypes.POTION_CONTENTS);
+                Set<StatusEffect> effects = potionContentsComponent == null?
+                    new HashSet<>(0) :
+                    StreamSupport.stream(potionContentsComponent.getEffects().spliterator(), false).map(statusEffectInstance -> statusEffectInstance.getEffectType().value()).collect(Collectors.toSet());
+
+                groups.merge(effects, itemStack.getCount(), Integer::sum);
             }
 
-            map.merge(key, e.modifier().value(), Double::sum);
-        }
-        return map;
-    }
-
-    public static LinkedList<ArrowGroup> computeArrowGroups(PlayerInventory inventory) {
-        var groups = new LinkedHashMap<Set<StatusEffect>, Integer>();
-        for (ItemStack itemStack : inventory) {
-            if (itemStack.isEmpty() || !itemStack.isIn(ItemTags.ARROWS)) continue;
-
-            PotionContentsComponent potionContentsComponent = itemStack.get(DataComponentTypes.POTION_CONTENTS);
-            Set<StatusEffect> effects = potionContentsComponent == null?
-                new HashSet<>(0) :
-                StreamSupport.stream(potionContentsComponent.getEffects().spliterator(), false).map(statusEffectInstance -> statusEffectInstance.getEffectType().value()).collect(Collectors.toSet());
-
-            groups.merge(effects, itemStack.getCount(), Integer::sum);
-        }
-
-        var result = new LinkedList<ArrowGroup>();
-        for (Map.Entry<Set<StatusEffect>, Integer> entry : groups.entrySet()) {
-            ItemStack icon;
-            Set<StatusEffect> effects = entry.getKey();
-            if (effects.isEmpty()) icon = new ItemStack(Items.ARROW);
-            else {
-                icon = new ItemStack(Items.TIPPED_ARROW);
-                icon.set(
-                    DataComponentTypes.POTION_CONTENTS,
-                    new PotionContentsComponent(Optional.empty(), Optional.empty(), effects.stream().map(effect -> new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(effect))).toList(), Optional.empty())
-                );
+            var result = new LinkedList<ArrowGroup>();
+            for (Map.Entry<Set<StatusEffect>, Integer> entry : groups.entrySet()) {
+                ItemStack icon;
+                Set<StatusEffect> effects = entry.getKey();
+                if (effects.isEmpty()) icon = new ItemStack(Items.ARROW);
+                else {
+                    icon = new ItemStack(Items.TIPPED_ARROW);
+                    icon.set(
+                        DataComponentTypes.POTION_CONTENTS,
+                        new PotionContentsComponent(Optional.empty(), Optional.empty(), effects.stream().map(effect -> new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(effect))).toList(), Optional.empty())
+                    );
+                }
+                result.add(new ArrowGroup(icon, entry.getValue()));
             }
-            result.add(new ArrowGroup(icon, entry.getValue()));
+            return result;
         }
-        return result;
+
+        private record ArmorData(Map<EquipmentSlot, ItemStack> equipped, Map<EquipmentSlot, ItemStack> bestUpgrade) {}
+
+        private record ArrowGroup(ItemStack icon, int count) {}
+
+        private enum Alignment { LEFT, RIGHT }
     }
-
-    public record ArmorData(Map<EquipmentSlot, ItemStack> equipped, Map<EquipmentSlot, ItemStack> bestUpgrade) {}
-
-    public record ArrowGroup(ItemStack icon, int count) {}
 }
