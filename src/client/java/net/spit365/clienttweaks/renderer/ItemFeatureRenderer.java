@@ -38,7 +38,10 @@ public class ItemFeatureRenderer extends FeatureRenderer<PlayerEntityRenderState
         JSONObject[] loadedCustomCosmetics = CosmeticsConfig.loadedCustomCosmetics;
         JSONObject enabledCosmetics = CosmeticsConfig.getEnabledCosmetics();
         Arrays.stream(loadedCustomCosmetics)
-            .filter(jsonObject -> enabledCosmetics.containsKey((String) jsonObject.get("name")))
+            .filter(jsonObject -> {
+                JSONObject players = (JSONObject) enabledCosmetics.get((String) jsonObject.get("name"));
+                return players != null && players.containsKey(state.name);
+            })
             .forEach(cosmetic -> {
                 ItemStack stack = new ItemStack(Registries.ITEM.get(Identifier.of((String) cosmetic.get("item"))));
                 matrices.push();
