@@ -21,6 +21,7 @@ import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 import net.spit365.clienttweaks.ClientTweaks;
 import net.spit365.clienttweaks.config.ArmorHudConfig;
 import org.apache.logging.log4j.util.TriConsumer;
@@ -64,6 +65,7 @@ public class ArmorHud {
         }, (context, client) -> {
             ArmorData data = computeArmorData(client.player.getInventory());
             int windowWidth = context.getScaledWindowWidth() - 20;
+            int durabilityLength = calcDurabilityLength(data);
             for (EquipmentSlot slot : ARMOR_SLOTS) {
                 int y = switch (slot){
                     case HEAD -> 0;
@@ -72,7 +74,7 @@ public class ArmorHud {
                     case FEET -> 60;
                     default -> throw new IllegalStateException("Unexpected value: " + slot);
                 };
-                renderArmorIcon(context, data, windowWidth - 40, y, slot, client.textRenderer);
+                renderArmorIcon(context, data, windowWidth - 40, y, slot, client.textRenderer, Alignment.RIGHT, durabilityLength);
 
             }
         }),
@@ -83,6 +85,7 @@ public class ArmorHud {
             }
         }, (context, client) -> {
             ArmorData data = computeArmorData(client.player.getInventory());
+            int durabilityLength = calcDurabilityLength(data);
             for (EquipmentSlot slot : ARMOR_SLOTS) {
                 int y = switch (slot){
                     case HEAD -> 0;
@@ -91,7 +94,7 @@ public class ArmorHud {
                     case FEET -> 60;
                     default -> throw new IllegalStateException("Unexpected value: " + slot);
                 };
-                renderArmorIcon(context, data, 0, y, slot, client.textRenderer);
+                renderArmorIcon(context, data, 0, y, slot, client.textRenderer, Alignment.LEFT, durabilityLength);
             }
         }),
 		BOTTOM_RIGHT((arrowGroups, arrowIconRenderConsumer, uiPos) -> {
@@ -102,6 +105,7 @@ public class ArmorHud {
         }, (context, client) -> {
             int x = context.getScaledWindowWidth() - 60;
             ArmorData data = computeArmorData(client.player.getInventory());
+            int durabilityLength = calcDurabilityLength(data);
             for (EquipmentSlot slot : ARMOR_SLOTS) {
                 int y = context.getScaledWindowHeight() - switch (slot){
                     case HEAD -> 80;
@@ -110,7 +114,7 @@ public class ArmorHud {
                     case FEET -> 20;
                     default -> throw new IllegalStateException("Unexpected value: " + slot);
                 };
-                renderArmorIcon(context, data, x, y, slot, client.textRenderer);
+                renderArmorIcon(context, data, x, y, slot, client.textRenderer, Alignment.RIGHT, durabilityLength);
             }
         }),
 		BOTTOM_LEFT((arrowGroups, arrowIconRenderConsumer, uiPos) -> {
@@ -121,6 +125,7 @@ public class ArmorHud {
         }, (context, client) -> {
             int height = context.getScaledWindowHeight();
             ArmorData data = computeArmorData(client.player.getInventory());
+            int durabilityLength = calcDurabilityLength(data);
             for (EquipmentSlot slot : ARMOR_SLOTS) {
                 int y = height - switch (slot){
                     case HEAD -> 80;
@@ -129,7 +134,7 @@ public class ArmorHud {
                     case FEET -> 20;
                     default -> throw new IllegalStateException("Unexpected value: " + slot);
                 };
-                renderArmorIcon(context, data, 0, y, slot, client.textRenderer);
+                renderArmorIcon(context, data, 0, y, slot, client.textRenderer, Alignment.LEFT, durabilityLength);
             }
         }),
 		HOTBAR((arrowGroups, arrowIconRenderConsumer, uiPos) -> {
@@ -141,30 +146,37 @@ public class ArmorHud {
         }, (context, client) -> {
             ArmorData data = computeArmorData(client.player.getInventory());
             int width = context.getScaledWindowWidth() / 4;
-            int height = context.getScaledWindowWidth() / 2;
+            int height = context.getScaledWindowHeight();
+            System.out.println(height);
+            int durabilityLength = calcDurabilityLength(data);
             for (EquipmentSlot slot : ARMOR_SLOTS) {
                 int x;
                 int y;
+                Alignment alignment;
                 switch (slot) {
                     case HEAD -> {
                         x = width - 20;
                         y = height - 40;
+                        alignment = Alignment.LEFT;
                     }
                     case CHEST -> {
                         x = width - 20;
                         y = height - 20;
+                        alignment = Alignment.LEFT;
                     }
                     case LEGS -> {
                         x = width * 3 - 20;
                         y = height - 40;
+                        alignment = Alignment.RIGHT;
                     }
                     case FEET -> {
                         x = width * 3 - 20;
                         y = height - 20;
+                        alignment = Alignment.RIGHT;
                     }
                     default -> throw new IllegalStateException("Unexpected value: " + slot);
                 }
-                renderArmorIcon(context, data, x, y, slot, client.textRenderer);
+                renderArmorIcon(context, data, x, y, slot, client.textRenderer, alignment, durabilityLength);
             }
         });
 
@@ -177,25 +189,76 @@ public class ArmorHud {
         }
 
         public record UiPos(int x, int y) {}
+        private enum Alignment { LEFT, RIGHT }
 
         @FunctionalInterface public interface ArrowIconRenderConsumer {
             void accept(UiPos pos, ArrowGroup group);
         }
 
-        private static void renderArmorIcon(DrawContext context, ArmorData data, int x, int y, EquipmentSlot slot, TextRenderer textRenderer) {
-            ItemStack equipped = data.equipped().get(slot);
-            int textLength = 0;
-            if (!equipped.isEmpty()) {
-                String durability = String.valueOf(equipped.getMaxDamage() - equipped.getDamage());
-                textLength = durability.length();
-                context.drawText(textRenderer, Text.literal(durability), x, y + 5, Colors.WHITE, true);
-                context.drawItem(equipped, x + 25 + 5 * textLength, y);
-                context.drawStackOverlay(textRenderer, equipped, x + 25 + 5 * textLength, y);
+        private static int calcDurabilityLength(ArmorData data) {
+            Map<EquipmentSlot, ItemStack> equipped = data.equipped();
+            int durabilityLength = 0;
+            for (EquipmentSlot slot : ARMOR_SLOTS) {
+                ItemStack stack = equipped.get(slot);
+                if (stack != null) {
+                    int stackDurabilityLength = String.valueOf(stack.getMaxDamage() - stack.getDamage()).length();
+                    if (stackDurabilityLength > durabilityLength) durabilityLength = stackDurabilityLength;
+                }
+
             }
+            return durabilityLength;
+        }
+
+        private static void renderArmorIcon(DrawContext context, ArmorData data, int x, int y, EquipmentSlot slot, TextRenderer textRenderer, Alignment alignment, int durabilityLength) {
+            ItemStack equipped = data.equipped().get(slot);
+            String literalDurability = "";
+            int color = Colors.BLACK;
+
+            if (!equipped.isEmpty()) {
+                int maxDamage = equipped.getMaxDamage();
+                int durability = maxDamage - equipped.getDamage();
+                float doubledPercent = MathHelper.clamp(durability * 2f / maxDamage, 0, 2);
+
+                int green;
+                int blue;
+                if (doubledPercent > 1) {
+                    green = 255;
+                    blue = MathHelper.lerp(doubledPercent - 1, 0, 255);
+                } else {
+                    blue = 0;
+                    green = MathHelper.lerp(doubledPercent, 0, 255);
+                }
+                color = 0xFFFF0000 | (green << 8) | blue;
+
+                literalDurability = String.valueOf(durability);
+            }
+
+            int xText = x;
+            int xEqItem = x;
+            int xBItem = x;
+
+            switch (alignment) {
+                case LEFT -> {
+                    xEqItem = x + 5 + 5 * durabilityLength;
+                    xBItem = x + (!equipped.isEmpty() ? 25 + 5 * durabilityLength : 0);
+                }
+                case RIGHT -> {
+                    xEqItem = x + 20;
+                    xText = x + 40;
+                    x = durabilityLength * 5 + 45;
+                }
+            }
+
+            if (!equipped.isEmpty()) {
+                context.drawText(textRenderer, Text.literal(literalDurability), xText, y + 5, color, true);
+                context.drawItem(equipped, xEqItem, y);
+                context.drawStackOverlay(textRenderer, equipped, xEqItem, y);
+            }
+
             ItemStack best = data.bestUpgrade().get(slot);
             if (best != null) {
-                context.drawItem(best, x + 5 + 5 * textLength, y);
-                context.drawStackOverlay(textRenderer, best, x + 5 + 5 * textLength, y);
+                context.drawItem(best, xBItem, y);
+                context.drawStackOverlay(textRenderer, best, xBItem, y);
             }
         }
 
