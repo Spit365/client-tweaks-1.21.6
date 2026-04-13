@@ -9,8 +9,6 @@ import net.minecraft.world.World;
 import net.spit365.clienttweaks.mod.ModParticles;
 
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 
 public class ModUtil {

@@ -28,7 +28,6 @@ import java.util.Set;
 
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
-import static net.spit365.clienttweaks.util.ConfigManager.*;
 
 public class ClientCommands {
     private static final int r = 1;
@@ -164,11 +163,8 @@ public class ClientCommands {
                                 .executes(context -> {
                                     String cosmeticKey = StringArgumentType.getString(context, "cosmetic");
                                     String target = StringArgumentType.getString(context, "target");
-                                    JSONObject cosmetic = CosmeticsConfig.getEnabledCosmetic(cosmeticKey);
-    
-                                    cosmetic.put(target, new JSONObject());
-                                    CosmeticsConfig.writeCosmetic(cosmeticKey, cosmetic);
-    
+                                    CosmeticsConfig.apply(target, cosmeticKey);
+
                                     context.getSource().sendFeedback(Text.literal("Added " + target + " to the config. You will see the changes shortly"));
                                     return r;
                                 })
@@ -181,11 +177,8 @@ public class ClientCommands {
                                 .executes(context -> {
                                     String cosmeticKey = StringArgumentType.getString(context, "cosmetic");
                                     String target = StringArgumentType.getString(context, "target");
-                                    JSONObject cosmetic = CosmeticsConfig.getEnabledCosmetic(cosmeticKey);
+                                    CosmeticsConfig.remove(target, cosmeticKey);
 
-                                    cosmetic.remove(target);
-                                    CosmeticsConfig.writeCosmetic(cosmeticKey, cosmetic);
-    
                                     context.getSource().sendFeedback(Text.literal("Removed " + target + " from the config. You will see the changes shortly"));
                                     return r;
                                 })
@@ -220,13 +213,8 @@ public class ClientCommands {
                                             String targetKey = StringArgumentType.getString(context, "target");
                                             String key = StringArgumentType.getString(context, "key");
                                             String value = StringArgumentType.getString(context, "value");
-    
-                                            JSONObject cosmetic = CosmeticsConfig.getEnabledCosmetic(cosmeticKey);
-                                            JSONObject target = read(cosmetic, targetKey);
-                                            target.put(key, value);
-                                            cosmetic.put(targetKey, target);
-                                            CosmeticsConfig.writeCosmetic(cosmeticKey, cosmetic);
-    
+
+                                            CosmeticsConfig.customize(targetKey, cosmeticKey, key, value);
                                             context.getSource().sendFeedback(Text.literal("Set " + key + " to " + value));
                                             return r;
                                         })
@@ -240,10 +228,10 @@ public class ClientCommands {
                     .then(argument("key", StringArgumentType.string())
                         .then(argument("value", StringArgumentType.string())
                             .executes(context -> {
-                                ArmorHudConfig.writeArmorHudOption(
+                                ArmorHudConfig.customize(
                                     StringArgumentType.getString(context, "key"),
                                     StringArgumentType.getString(context, "value")
-																  );
+                                );
                                 return r;
                             })
                         )

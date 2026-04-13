@@ -1,11 +1,16 @@
 package net.spit365.clienttweaks;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.resource.ResourceManager;
+import net.minecraft.resource.ResourceType;
+import net.minecraft.util.Identifier;
 import net.spit365.clienttweaks.config.BoxOutlineConfig;
 import net.spit365.clienttweaks.config.CosmeticsConfig;
-import net.spit365.clienttweaks.mod.ClientCommands;
 import net.spit365.clienttweaks.gui.ArmorHud;
+import net.spit365.clienttweaks.mod.ClientCommands;
 import net.spit365.clienttweaks.mod.ClientTick;
 import net.spit365.clienttweaks.mod.ModParticles;
 import net.spit365.clienttweaks.renderer.BoxOutlineRenderer;
@@ -24,6 +29,15 @@ public class ClientTweaks implements ClientModInitializer {
 		ModParticles.init();
         CosmeticsConfig.init();
 		BoxOutlineRenderer.init();
+
+		updateConfig();
+		ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
+			public static final Identifier ID = Identifier.of(ClientTweaks.MOD_ID, "general");
+			@Override public Identifier getFabricId() { return ID; }
+			@Override public void reload(ResourceManager manager) {
+				updateConfig();
+			}
+		});
 	}
 
 	public static void updateConfig() {

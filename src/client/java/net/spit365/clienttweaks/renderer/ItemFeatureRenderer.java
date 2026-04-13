@@ -35,13 +35,12 @@ public class ItemFeatureRenderer extends FeatureRenderer<PlayerEntityRenderState
 
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, PlayerEntityRenderState state, float limbAngle, float limbDistance) {
-        JSONObject[] loadedCustomCosmetics = CosmeticsConfig.loadedCustomCosmetics;
-        JSONObject enabledCosmetics = CosmeticsConfig.getEnabledCosmetics();
+        JSONObject[] loadedCustomCosmetics = CosmeticsConfig.getLoadedCustomCosmetics();
         Arrays.stream(loadedCustomCosmetics)
-            .filter(jsonObject -> {
-                JSONObject players = (JSONObject) enabledCosmetics.get((String) jsonObject.get("name"));
-                return players != null && players.containsKey(state.name);
-            })
+            .filter(jsonObject ->
+                CosmeticsConfig.getEnabledCosmetic(
+                    (String) jsonObject.get("name")
+                ).containsKey(state.name))
             .forEach(cosmetic -> {
                 ItemStack stack = new ItemStack(Registries.ITEM.get(Identifier.of((String) cosmetic.get("item"))));
                 matrices.push();

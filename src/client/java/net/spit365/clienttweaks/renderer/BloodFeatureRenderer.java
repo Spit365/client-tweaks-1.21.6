@@ -1,7 +1,6 @@
 package net.spit365.clienttweaks.renderer;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
@@ -26,16 +25,15 @@ public class BloodFeatureRenderer extends FeatureRenderer<PlayerEntityRenderStat
 			VertexConsumer buffer = vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(BloodCoveredModel.TEXTURE));
 			int overlay = LivingEntityRenderer.getOverlay(state, 0f);
 			PlayerEntityModel playerModel = getContextModel();
-			ModelPart bloodModel = BloodCoveredModel.getTexturedModelData().createModel();
 
 			matrices.push();
 			ModUtil.applyPartTransform(matrices, playerModel.rightLeg);
-			bloodModel.getChild("right").render(matrices, buffer, light, overlay);
+			BloodCoveredModel.MODEL.getChild("right").render(matrices, buffer, light, overlay);
 			matrices.pop();
 
 			matrices.push();
 			ModUtil.applyPartTransform(matrices, playerModel.leftLeg);
-			bloodModel.getChild("left").render(matrices, buffer, light, overlay);
+			BloodCoveredModel.MODEL.getChild("left").render(matrices, buffer, light, overlay);
 			matrices.pop();
 		}
 	}

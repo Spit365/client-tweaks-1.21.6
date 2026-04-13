@@ -16,25 +16,38 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.Identifier;
 import net.minidev.json.JSONObject;
 import net.spit365.clienttweaks.ClientTweaks;
+import net.spit365.clienttweaks.config.CosmeticsConfig;
 import net.spit365.clienttweaks.model.TailModel;
 import net.spit365.clienttweaks.util.ConfigManager;
-import net.spit365.clienttweaks.config.CosmeticsConfig;
 import net.spit365.clienttweaks.util.ModUtil;
 
 import java.util.stream.StreamSupport;
 
 @Environment(EnvType.CLIENT)
 public class TailFeatureRenderer extends FeatureRenderer<PlayerEntityRenderState, PlayerEntityModel> implements ConfigManager.DefaultedJsonReader{
-	public TailFeatureRenderer(FeatureRendererContext<PlayerEntityRenderState, PlayerEntityModel> context) {super(context);}
+	private final TailModel<PlayerEntityRenderState> MODEL;
+
+	public TailFeatureRenderer(FeatureRendererContext<PlayerEntityRenderState, PlayerEntityModel> context) {super(context);
+        this.MODEL = new TailModel<>();
+    }
 
 	@Override
 	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, PlayerEntityRenderState state, float limbAngle, float limbDistance) {
 		JSONObject category = CosmeticsConfig.getEnabledCosmetic("tail");
 		if (isDev(state.name) || (category.containsKey(state.name)) && !state.invisible) {
 			matrices.push();
-			if (state.isInSneakingPose) matrices.translate(0f,  0.2f, 0.1f);
+			if (state.isInSneakingPose) matrices.translate(0f,  0.29f, 0.1f);
 			ModUtil.applyPartTransform(matrices, getContextModel().body);
-			TailModel.getModel(state.isInSneakingPose).render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntitySolid(Identifier.of(stringOption((JSONObject) category.get(state.name), "texture")))), light, LivingEntityRenderer.getOverlay(state, 0f));
+
+			MODEL.setAngles(state);
+			MODEL.render(
+					matrices,
+					vertexConsumers.getBuffer(RenderLayer.getEntitySolid(
+						Identifier.of(stringOption((JSONObject) category.get(state.name), "texture"))
+					)),
+					light,
+					LivingEntityRenderer.getOverlay(state, 0f)
+				);
 			matrices.pop();
 		}
 	}

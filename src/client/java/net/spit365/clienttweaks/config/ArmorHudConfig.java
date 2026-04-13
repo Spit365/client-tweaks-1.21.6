@@ -32,11 +32,9 @@ public class ArmorHudConfig {
         return ArmorHud.ArmorHudRenderer.TOP_RIGHT;
 	}
 
-	public static void writeArmorHudOption(String key, String value) {
+	public static void customize(String key, String value) {
 		JSONObject options = getArmorHudOptions();
 		options.put(key, value);
 		ConfigManager.write(ARMOR_HUD_ID, options);
 	}
-
-
 }

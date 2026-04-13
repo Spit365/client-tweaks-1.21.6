@@ -9,13 +9,15 @@ import net.spit365.clienttweaks.ClientTweaks;
 public class BloodCoveredModel<T extends EntityRenderState> extends EntityModel<T> {
 	public BloodCoveredModel(ModelPart root) {super(root);}
 
-	public static final Identifier TEXTURE = Identifier.of(ClientTweaks.MOD_ID, "textures/entity/blood_feature.png");
+	public static final ModelPart MODEL;
 
-	public static TexturedModelData getTexturedModelData() {
+	static {
 		ModelData modelData = new ModelData();
 		ModelPartData modelPartData = modelData.getRoot();
 		modelPartData.addChild("right", ModelPartBuilder.create().uv(0, 0).cuboid(-4f, -12f, -2f, 4f, 12f, 4f, new Dilation(0.5f)), ModelTransform.origin(0f, 24f, 0f));
 		modelPartData.addChild("left", ModelPartBuilder.create().uv(0, 16).cuboid(0f, -12f, -2f, 4f, 12f, 4f, new Dilation(0.5f)), ModelTransform.origin(0f, 24f, 0f));
-		return TexturedModelData.of(modelData, 32, 32);
+		MODEL = TexturedModelData.of(modelData, 32, 32).createModel();
 	}
+
+	public static final Identifier TEXTURE = Identifier.of(ClientTweaks.MOD_ID, "textures/entity/blood_feature.png");
 }

@@ -13,9 +13,9 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.Random;
-import net.spit365.clienttweaks.util.ConfigManager;
 import net.minidev.json.JSONObject;
 import net.spit365.clienttweaks.config.CosmeticsConfig;
+import net.spit365.clienttweaks.util.ConfigManager;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -50,8 +50,7 @@ public class ParticleFeatureRenderer extends FeatureRenderer<PlayerEntityRenderS
                for (int i = 0; i < random.nextBetweenExclusive(
                        intOption(options, "minParticle"),
                        intOption(options, "maxParticle")
-               ); i++)
-                    clientWorld.addParticleClient(
+               ); i++) clientWorld.addParticleClient(
                          (ParticleEffect) Registries.PARTICLE_TYPE.get(Identifier.of(stringOption(options, "particle"))),
                          player.getX() + doubleOption(options, "x"),
                          player.getY() + doubleOption(options, "y"),

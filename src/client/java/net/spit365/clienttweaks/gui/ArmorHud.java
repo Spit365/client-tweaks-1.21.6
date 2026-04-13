@@ -43,7 +43,7 @@ public class ArmorHud {
 			PlayerInventory inventory = player.getInventory();
             ArmorHudRenderer armorHudRenderer = ArmorHudConfig.getArmorHudRenderer();
 
-            if (ArmorHudConfig.isEnabled("armor")) armorHudRenderer.armorHudRender.accept(context, client);
+            if (ArmorHudConfig.isEnabled("armor")) armorHudRenderer.armorRender.accept(context, client);
 			if (ArmorHudConfig.isEnabled("arrows") && inventory.contains(s -> s.isIn(ItemTags.ARROWS))) armorHudRenderer.arrowRenderer.accept(context, client);
 		});
 	}
@@ -143,7 +143,6 @@ public class ArmorHud {
             ArmorData data = computeArmorData(client.player.getInventory());
             int width = context.getScaledWindowWidth() / 4;
             int height = context.getScaledWindowHeight();
-            System.out.println(height);
             int durabilityLength = calcDurabilityLength(data);
             for (EquipmentSlot slot : ARMOR_SLOTS) {
                 int x;
@@ -177,26 +176,11 @@ public class ArmorHud {
         });
 
         public final BiConsumer<DrawContext, MinecraftClient> arrowRenderer;
-        public final BiConsumer<DrawContext, MinecraftClient> armorHudRender;
+        public final BiConsumer<DrawContext, MinecraftClient> armorRender;
 
-        ArmorHudRenderer(BiConsumer<DrawContext, MinecraftClient> arrowRenderer, BiConsumer<DrawContext, MinecraftClient> armorHudRender){
+        ArmorHudRenderer(BiConsumer<DrawContext, MinecraftClient> arrowRenderer, BiConsumer<DrawContext, MinecraftClient> armorRender){
             this.arrowRenderer = arrowRenderer;
-            this.armorHudRender = armorHudRender;
-        }
-
-
-        private static int calcDurabilityLength(ArmorData data) {
-            Map<EquipmentSlot, ItemStack> equipped = data.equipped();
-            int durabilityLength = 0;
-            for (EquipmentSlot slot : ARMOR_SLOTS) {
-                ItemStack stack = equipped.get(slot);
-                if (stack != null) {
-                    int stackDurabilityLength = String.valueOf(stack.getMaxDamage() - stack.getDamage()).length();
-                    if (stackDurabilityLength > durabilityLength) durabilityLength = stackDurabilityLength;
-                }
-
-            }
-            return durabilityLength;
+            this.armorRender = armorRender;
         }
 
         private static void renderArmorIcon(DrawContext context, @NotNull ArmorData data, int x, int y, EquipmentSlot slot, TextRenderer textRenderer, Alignment alignment, int durabilityLength) {
@@ -256,6 +240,20 @@ public class ArmorHud {
             String text = String.valueOf(arrowGroup.count());
             context.drawText(mc.textRenderer, text, x, y + 5, Colors.WHITE, true);
             context.drawItem(icon, x + (5 * (text.length() + 1)), y);
+        }
+
+        private static int calcDurabilityLength(ArmorData data) {
+            Map<EquipmentSlot, ItemStack> equipped = data.equipped();
+            int durabilityLength = 0;
+            for (EquipmentSlot slot : ARMOR_SLOTS) {
+                ItemStack stack = equipped.get(slot);
+                if (stack != null) {
+                    int stackDurabilityLength = String.valueOf(stack.getMaxDamage() - stack.getDamage()).length();
+                    if (stackDurabilityLength > durabilityLength) durabilityLength = stackDurabilityLength;
+                }
+
+            }
+            return durabilityLength;
         }
 
         @Contract("_ -> new")

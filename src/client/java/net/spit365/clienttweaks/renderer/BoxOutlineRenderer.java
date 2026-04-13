@@ -15,9 +15,11 @@ import net.spit365.clienttweaks.config.BoxOutlineConfig;
 import net.spit365.clienttweaks.util.EdgeCalculator;
 import org.joml.Matrix4f;
 
-import java.util.*;
+import java.util.OptionalDouble;
+import java.util.Set;
 
-import static net.minecraft.client.gl.RenderPipelines.*;
+import static net.minecraft.client.gl.RenderPipelines.GLOBALS_SNIPPET;
+import static net.minecraft.client.gl.RenderPipelines.TRANSFORMS_PROJECTION_FOG_SNIPPET;
 import static net.minecraft.client.render.RenderPhase.ITEM_ENTITY_TARGET;
 import static net.minecraft.client.render.RenderPhase.VIEW_OFFSET_Z_LAYERING;
 
@@ -25,7 +27,7 @@ import static net.minecraft.client.render.RenderPhase.VIEW_OFFSET_Z_LAYERING;
 public final class BoxOutlineRenderer {
 
     public static final RenderLayer.MultiPhase LINES = RenderLayer.of(
-        "lines2",
+        "lines_boxoutlines",
         1536,
         RenderPipelines.register(
             RenderPipeline.builder(TRANSFORMS_PROJECTION_FOG_SNIPPET, GLOBALS_SNIPPET)
