@@ -63,8 +63,6 @@ public class ItemFeatureRenderer extends FeatureRenderer<PlayerEntityRenderState
     private static void setupMatrices(MatrixStack matrices, JSONArray matrixOperations) {
         matrixOperations.stream().map(JSONObject.class::cast).forEach(matrixOperation -> {
             switch ((String) matrixOperation.get("type")){
-                case "push" -> matrices.push();
-                case "pop" -> matrices.pop();
                 case "translate" -> matrices.translate(
                     dtf(matrixOperation.get("x")),
                     dtf(matrixOperation.get("y")),
