@@ -73,19 +73,13 @@ public class ItemFeatureRenderer extends FeatureRenderer<PlayerEntityRenderState
                     dtf(matrixOperation.get("y")),
                     dtf(matrixOperation.get("z"))
                 );
-                case "multiply" -> matrices.multiply(new Quaternionf(
-                    dtf(matrixOperation.get("x")),
-                    dtf(matrixOperation.get("y")),
-                    dtf(matrixOperation.get("z")),
-                    dtf(matrixOperation.get("w"))
-                ));
                 case "rotate" -> matrices.multiply(new Quaternionf().rotationAxis(
-                    dtf(matrixOperation.get("degrees")),
+                    (float) Math.toRadians((Double) matrixOperation.get("degrees")),
                     dtf(matrixOperation.get("x")),
                     dtf(matrixOperation.get("y")),
                     dtf(matrixOperation.get("z"))
                 ));
-                default -> throw new RuntimeException("Unsupported matrix operation in one of the loaded, equipped, rendered cosmetics");
+                default -> throw new RuntimeException("Unsupported matrix operation in one of the cosmetics!");
             }
         });
     }
