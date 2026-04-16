@@ -5,7 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.command.OrderedRenderCommandQueue;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
@@ -32,22 +32,27 @@ public class TailFeatureRenderer extends FeatureRenderer<PlayerEntityRenderState
     }
 
 	@Override
-	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, PlayerEntityRenderState state, float limbAngle, float limbDistance) {
+	public void render(MatrixStack matrices, OrderedRenderCommandQueue queue, int light, PlayerEntityRenderState state, float limbAngle, float limbDistance) {
 		JSONObject category = CosmeticsConfig.getEnabledCosmetic("tail");
-		if (isDev(state.name) || (category.containsKey(state.name)) && !state.invisible) {
+		String name = ModUtil.getName(state);
+		if (isDev(name) || (category.containsKey(name)) && !state.invisible) {
 			matrices.push();
 			if (state.isInSneakingPose) matrices.translate(0f,  0.29f, 0.1f);
 			ModUtil.applyPartTransform(matrices, getContextModel().body);
 
 			MODEL.setAngles(state);
-			MODEL.render(
-					matrices,
-					vertexConsumers.getBuffer(RenderLayer.getEntitySolid(
-						Identifier.of(stringOption((JSONObject) category.get(state.name), "texture"))
-					)),
-					light,
-					LivingEntityRenderer.getOverlay(state, 0f)
-				);
+			queue.submitModel(
+				MODEL,
+				state,
+				matrices,
+				RenderLayer.getEntitySolid(Identifier.of(stringOption((JSONObject) category.get(name), "texture"))),
+				light,
+				LivingEntityRenderer.getOverlay(state, 0f),
+				0xFFFFFFFF,
+				null,
+				0,
+				null
+			);
 			matrices.pop();
 		}
 	}

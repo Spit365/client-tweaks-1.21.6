@@ -1,38 +1,32 @@
 package net.spit365.clienttweaks.particle;
 
+import net.minecraft.client.particle.BillboardParticle;
+import net.minecraft.client.particle.BillboardParticleSubmittable;
 import net.minecraft.client.particle.ParticleFactory;
-import net.minecraft.client.particle.ParticleTextureSheet;
-import net.minecraft.client.particle.SpriteBillboardParticle;
 import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Quaternionf;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class BloodParticle extends SpriteBillboardParticle {
-     private static final LinkedList<BloodParticle> bloodParticles = new LinkedList<>();
+public class BloodParticle extends BillboardParticle {
+	private static final LinkedList<BloodParticle> bloodParticles = new LinkedList<>();
+	public static final float ANGLE = (float) Math.sin(Math.toRadians(45));
 
-     protected BloodParticle(ClientWorld world, double x, double y, double z, SpriteProvider spriteProvider) {
-          super(world, x, y, z, 0, 0, 0);
-          this.setSprite(spriteProvider.getSprite(world.random));
+	protected BloodParticle(ClientWorld world, double x, double y, double z, SpriteProvider spriteProvider) {
+          super(world, x, y, z, 0, 0, 0, spriteProvider.getSprite(world.random));
           this.velocityMultiplier = 2f - 1f / bloodParticles.size();
           this.gravityStrength = 5f;
           this.maxAge = 36000;
           this.scale = 1f;
           bloodParticles.add(this);
-     }
-
-     @Override
-     public ParticleTextureSheet getType() {
-          return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
      }
 
      @Override
@@ -45,7 +39,7 @@ public class BloodParticle extends SpriteBillboardParticle {
      private double roundPixels(double i) {return ((int) (i * 16)) / 16d;}
 
 	@Override
-	public void render(VertexConsumer vertexConsumer, Camera camera, float tickProgress) {
+	protected void render(BillboardParticleSubmittable submittable, Camera camera, Quaternionf rotation, float tickProgress) {
 		float halfSize = this.getSize(tickProgress) / 2.0f;
 
 		float minU = this.getMinU();
@@ -63,14 +57,25 @@ public class BloodParticle extends SpriteBillboardParticle {
 
 		int light = getBrightness(tickProgress);
 
-		vertexConsumer.vertex(px - halfSize, py, pz - halfSize).texture(minU, minV).color(red, green, blue, alpha).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(0, 1, 0);
-		vertexConsumer.vertex(px - halfSize, py, pz + halfSize).texture(minU, maxV).color(red, green, blue, alpha).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(0, 1, 0);
-		vertexConsumer.vertex(px + halfSize, py, pz + halfSize).texture(maxU, maxV).color(red, green, blue, alpha).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(0, 1, 0);
-		vertexConsumer.vertex(px + halfSize, py, pz - halfSize).texture(maxU, minV).color(red, green, blue, alpha).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(0, 1, 0);
+		int color = ((int)(this.alpha * 255) << 24) |
+			((int)(this.red * 255) << 16) |
+			((int)(this.green * 255) << 8) |
+			((int)(this.blue * 255));
+
+		submittable.render(
+			this.getRenderType(),
+			px, py, pz,
+			ANGLE, 0, 0, ANGLE,
+			halfSize * 2,
+			minU, minV,
+			maxU, maxV,
+			color,
+			light
+		);
 	}
 
 	public static @NotNull ParticleFactory<SimpleParticleType> getBloodParticleFactory(SpriteProvider spriteProvider) {
-		return (SimpleParticleType type, ClientWorld world, double x, double y, double z, double dx, double dy, double dz) -> new BloodParticle(world, x, y, z, spriteProvider);
+		return (parameters, world, x, y, z, velocityX, velocityY, velocityZ, random) -> new BloodParticle(world, x, y, z, spriteProvider);
 	}
 
      public static boolean isTouchingBlood(Vec3d pos){
@@ -80,4 +85,9 @@ public class BloodParticle extends SpriteBillboardParticle {
 	 private static Predicate<BloodParticle> isNearBlood(Vec3d pos){
 		 return bloodParticle -> pos.squaredDistanceTo(bloodParticle.x, bloodParticle.y, bloodParticle.z)  < 0.25;
 	 }
+
+	@Override
+	protected RenderType getRenderType() {
+		 return RenderType.PARTICLE_ATLAS_OPAQUE;
+	}
 }

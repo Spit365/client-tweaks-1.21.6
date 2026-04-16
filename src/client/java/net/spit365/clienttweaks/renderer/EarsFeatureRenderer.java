@@ -3,7 +3,7 @@ package net.spit365.clienttweaks.renderer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.command.OrderedRenderCommandQueue;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
@@ -19,17 +19,19 @@ public class EarsFeatureRenderer extends FeatureRenderer<PlayerEntityRenderState
 	public EarsFeatureRenderer(FeatureRendererContext<PlayerEntityRenderState, PlayerEntityModel> context) {super(context);}
 
 	@Override
-	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, PlayerEntityRenderState state, float limbAngle, float limbDistance) {
-		if (CosmeticsConfig.getEnabledCosmetic("ears").containsKey(state.name) && !state.invisible) {
-          	matrices.push();
+	public void render(MatrixStack matrices, OrderedRenderCommandQueue queue, int light, PlayerEntityRenderState state, float limbAngle, float limbDistance) {
+		if (CosmeticsConfig.getEnabledCosmetic("ears").containsKey(ModUtil.getName(state)) && !state.invisible) {
+			matrices.push();
 			ModUtil.applyPartTransform(matrices, getContextModel().head);
 			if (state.isInSneakingPose) matrices.translate(0f, 0.25f, 0f);
-			EarsModel.MODEL.render(
-					matrices,
-					vertexConsumers.getBuffer(RenderLayer.getArmorCutoutNoCull(EarsModel.TEXTURE)),
-					light,
-					LivingEntityRenderer.getOverlay(state, 0f)
-				);
+			queue.submitModelPart(
+				EarsModel.MODEL,
+				matrices,
+				RenderLayer.getArmorCutoutNoCull(EarsModel.TEXTURE),
+				light,
+				LivingEntityRenderer.getOverlay(state, 0f),
+				null
+			);
 			matrices.pop();
 		}
 	}

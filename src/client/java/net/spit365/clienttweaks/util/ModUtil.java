@@ -1,6 +1,7 @@
 package net.spit365.clienttweaks.util;
 
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.RotationAxis;
@@ -28,5 +29,13 @@ public class ModUtil {
 
     public static <T> HashSet<T> makeMutable(Set<T> list) {
         return list == null ? new HashSet<>() : new HashSet<>(list);
+    }
+
+    public static String getName(PlayerEntityRenderState state) {
+         return state.playerName != null ?
+             state.playerName.getString() :
+             state.displayName != null ?
+                 state.displayName.getString() :
+                 "";
     }
 }

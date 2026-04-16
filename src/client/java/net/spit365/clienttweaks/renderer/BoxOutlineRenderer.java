@@ -5,8 +5,6 @@ import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
@@ -44,23 +42,16 @@ public final class BoxOutlineRenderer {
             .build(false)
     );
 
-    public static void init() {
-        WorldRenderEvents.LAST.register(BoxOutlineRenderer::render);
-    }
-
-    private static void render(WorldRenderContext ctx) {
+    public static void render(Camera camera, MatrixStack matrices, VertexConsumerProvider vcp) {
         Set<ColoredEdge> permanentState = BoxOutlineConfig.getCachedEdges();
         if (BoxOutlineConfig.state.isEmpty() && permanentState.isEmpty()) return;
 
-        var camera = ctx.camera();
         Vec3d cam = camera.getPos();
 
-        MatrixStack matrices = ctx.matrixStack();
         if (matrices == null) return;
         matrices.push();
         matrices.translate(-cam.x, -cam.y, -cam.z);
 
-        VertexConsumerProvider vcp = ctx.consumers();
         if (vcp == null) return;
         VertexConsumer vc = vcp.getBuffer(LINES);
         Matrix4f mat = matrices.peek().getPositionMatrix();
@@ -86,4 +77,5 @@ public final class BoxOutlineRenderer {
 
     public record ColoredEdge(EdgeCalculator.Edge edge, float r, float g, float b, float a)  {}
 
+    public static void init() {}
 }

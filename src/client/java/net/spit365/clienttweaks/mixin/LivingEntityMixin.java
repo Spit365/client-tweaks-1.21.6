@@ -14,9 +14,9 @@ public class LivingEntityMixin {
 	@Inject(method = "addDeathParticles", at = @At("HEAD"), cancellable = true)
 	public void addDeathParticles(CallbackInfo ci){
 		if (((LivingEntity) (Object) this) instanceof PlayerEntity player) {
-			World world = player.getWorld();
+			World world = player.getEntityWorld();
 			if (world != null) {
-                ModUtil.summonBleed(player.getPos(), world);
+                ModUtil.summonBleed(player.getEntityPos(), world);
                 ci.cancel();
 			}
 		}

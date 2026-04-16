@@ -2,7 +2,7 @@ package net.spit365.clienttweaks.renderer;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.command.OrderedRenderCommandQueue;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
@@ -16,6 +16,7 @@ import net.minecraft.util.math.random.Random;
 import net.minidev.json.JSONObject;
 import net.spit365.clienttweaks.config.CosmeticsConfig;
 import net.spit365.clienttweaks.util.ConfigManager;
+import net.spit365.clienttweaks.util.ModUtil;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -35,32 +36,33 @@ public class ParticleFeatureRenderer extends FeatureRenderer<PlayerEntityRenderS
      private int particleCounter = 0;
 
      @Override
-     public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, PlayerEntityRenderState state, float limbAngle, float limbDistance) {
+     public void render(MatrixStack matrices, OrderedRenderCommandQueue queue, int light, PlayerEntityRenderState state, float limbAngle, float limbDistance) {
           ClientWorld clientWorld = MinecraftClient.getInstance().world;
           ClientPlayerEntity player = MinecraftClient.getInstance().player;
           JSONObject category = CosmeticsConfig.getEnabledCosmetic("particles");
+          String name = ModUtil.getName(state);
           if (
-               category.containsKey(state.name) &&
-               !state.invisible &&
-               clientWorld != null &&
-               player != null &&
-               particleCounter <= 0
+              category.containsKey(name) &&
+                  !state.invisible &&
+                  clientWorld != null &&
+                  player != null &&
+                  particleCounter <= 0
           ) {
-               JSONObject options = (JSONObject) category.get(state.name);
+               JSONObject options = (JSONObject) category.get(name);
                for (int i = 0; i < random.nextBetweenExclusive(
-                       intOption(options, "minParticle"),
-                       intOption(options, "maxParticle")
+                   intOption(options, "minParticle"),
+                   intOption(options, "maxParticle")
                ); i++) clientWorld.addParticleClient(
-                         (ParticleEffect) Registries.PARTICLE_TYPE.get(Identifier.of(stringOption(options, "particle"))),
-                         player.getX() + doubleOption(options, "x"),
-                         player.getY() + doubleOption(options, "y"),
-                         player.getZ() + doubleOption(options, "z"),
-                         random.nextGaussian() * floatOption(options, "vx"),
-                         random.nextGaussian() * floatOption(options, "vy"),
-                         random.nextGaussian() * floatOption(options, "vz"));
+                   (ParticleEffect) Registries.PARTICLE_TYPE.get(Identifier.of(stringOption(options, "particle"))),
+                   player.getX() + doubleOption(options, "x"),
+                   player.getY() + doubleOption(options, "y"),
+                   player.getZ() + doubleOption(options, "z"),
+                   random.nextGaussian() * floatOption(options, "vx"),
+                   random.nextGaussian() * floatOption(options, "vy"),
+                   random.nextGaussian() * floatOption(options, "vz"));
                particleCounter = random.nextBetweenExclusive(
-                    intOption(options, "minCooldown"),
-                    intOption(options, "maxCooldown"));
+                   intOption(options, "minCooldown"),
+                   intOption(options, "maxCooldown"));
           }
      }
 
