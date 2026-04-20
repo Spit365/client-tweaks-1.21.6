@@ -16,9 +16,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Predicate;
 
+import static java.lang.Math.*;
+
 public class BloodParticle extends BillboardParticle {
 	private static final LinkedList<BloodParticle> bloodParticles = new LinkedList<>();
-	public static final float ANGLE = (float) Math.sin(Math.toRadians(45));
+	public static final float ANGLE = (float) sin(Math.toRadians(-90));
 
 	protected BloodParticle(ClientWorld world, double x, double y, double z, SpriteProvider spriteProvider) {
           super(world, x, y, z, 0, 0, 0, spriteProvider.getSprite(world.random));
@@ -49,10 +51,10 @@ public class BloodParticle extends BillboardParticle {
 
 		Vec3d camPos = camera.getPos();
 
+        Predicate<BloodParticle> nearBlood = isNearBlood(new Vec3d(this.x, this.y, this.z));
+		List<BloodParticle> list = bloodParticles.stream().filter(nearBlood).toList();
 		float px = (float) (MathHelper.lerp(tickProgress, lastX, x) - camPos.getX());
-		Vec3d pos = new Vec3d(this.x, this.y, this.z);
-		List<BloodParticle> list = bloodParticles.stream().filter(isNearBlood(pos)).toList();
-		float py = (float) (MathHelper.lerp(tickProgress, lastY, y) - camPos.getY()  + 0.001 * (list.indexOf(this) + 1));
+		float py = (float) (MathHelper.lerp(tickProgress, lastY, y) - camPos.getY() + 0.001 * (list.indexOf(this) + 1));
 		float pz = (float) (MathHelper.lerp(tickProgress, lastZ, z) - camPos.getZ());
 
 		int light = getBrightness(tickProgress);
@@ -65,10 +67,10 @@ public class BloodParticle extends BillboardParticle {
 		submittable.render(
 			this.getRenderType(),
 			px, py, pz,
-			ANGLE, 0, 0, ANGLE,
+			1, 0, 0, -1,
 			halfSize * 2,
-			minU, minV,
-			maxU, maxV,
+			minU, maxU,
+			minV, maxV,
 			color,
 			light
 		);
